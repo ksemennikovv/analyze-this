@@ -230,3 +230,59 @@ initCarousel('vidSlides','vidPrev','vidNext');
     return bubble;
   }
 })();
+
+(function(){
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var micBtn  = document.getElementById('chatMicBtn');
+  var input   = document.getElementById('chatInput');
+
+  if(!SpeechRecognition || !micBtn){ if(micBtn) micBtn.style.display='none'; return; }
+
+  var recognition = new SpeechRecognition();
+  recognition.continuous    = true;
+  recognition.interimResults = true;
+  recognition.lang          = 'ru-RU';
+
+  var recording = false;
+  var baseText  = '';
+  var interim   = '';
+
+  recognition.onresult = function(e){
+    interim = '';
+    var final = '';
+    for(var i = e.resultIndex; i < e.results.length; i++){
+      if(e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    if(final) baseText += final;
+    input.value = baseText + interim;
+  };
+
+  recognition.onerror = function(e){
+    if(e.error === 'not-allowed' || e.error === 'service-not-allowed') micBtn.style.display = 'none';
+    stopRec();
+  };
+
+  recognition.onend = function(){ if(recording) recognition.start(); };
+
+  function startRec(){
+    baseText = input.value;
+    interim  = '';
+    recording = true;
+    micBtn.classList.add('input-mic--recording');
+    recognition.start();
+  }
+
+  function stopRec(){
+    recording = false;
+    micBtn.classList.remove('input-mic--recording');
+    recognition.onend = null;
+    try{ recognition.stop(); }catch(e){}
+    recognition.onend = function(){ if(recording) recognition.start(); };
+    input.value = baseText;
+  }
+
+  micBtn.addEventListener('click', function(){
+    if(recording) stopRec(); else startRec();
+  });
+})();
