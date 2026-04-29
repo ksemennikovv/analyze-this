@@ -111,7 +111,7 @@ initCarousel('vidSlides','vidPrev','vidNext');
 })();
 
 (function(){
-  var ctaBtn    = document.querySelector('.cta-btn');
+  var ctaBtn    = document.getElementById('ctaMain');
   var chatSect  = document.getElementById('chatSection');
   var msgsList  = document.getElementById('chatMessages');
   var chatInput = document.getElementById('chatInput');
@@ -354,7 +354,27 @@ initCarousel('vidSlides','vidPrev','vidNext');
 
   function onAuthed(){
     modal.classList.add('hidden');
+    var lb = document.getElementById('logoutBar');
+    if(lb) lb.style.display = 'flex';
     loadHistory();
+  }
+
+  var logoutBtn = document.getElementById('logoutBtn');
+  if(logoutBtn){
+    logoutBtn.addEventListener('click', function(){
+      var fd = new FormData();
+      fd.append('action', 'logout');
+      fetch('php/auth.php', {method:'POST', body:fd}).then(function(){
+        document.getElementById('logoutBar').style.display = 'none';
+        modal.classList.remove('hidden');
+        // clear chat
+        var msgs = document.getElementById('chatMessages');
+        if(msgs) msgs.innerHTML = '';
+        var chat = document.getElementById('chatSection');
+        if(chat) chat.style.display = 'none';
+        window.__chatHistory = [];
+      });
+    });
   }
 
   /* load history from DB */

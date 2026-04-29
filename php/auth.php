@@ -1,6 +1,9 @@
 <?php
+error_reporting(0);
+ini_set('display_errors', 0);
 session_start();
 header('Content-Type: application/json');
+
 require_once __DIR__ . '/db.php';
 
 $action = $_POST['action'] ?? '';
@@ -28,12 +31,16 @@ if ($action === 'register') {
     $pass  = $_POST['password'] ?? '';
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($pass) < 6) {
-        echo json_encode(['ok' => false, 'error' => 'Некорректные данные']);
+        echo json_encode(['ok' => false, 'error' => 'Email некорректен или пароль короче 6 символов']);
         exit;
     }
 
-    $db   = db();
+    $db = db();
+    if (!$db) { echo json_encode(['ok' => false, 'error' => 'Нет подключения к БД']); exit; }
+
     $stmt = $db->prepare('SELECT id FROM users WHERE email = ?');
+    if (!$stmt) { echo json_encode(['ok' => false, 'error' => 'Таблица users не найдена — запустите schema.sql']); exit; }
+
     $stmt->bind_param('s', $email);
     $stmt->execute();
     if ($stmt->get_result()->num_rows > 0) {
@@ -58,11 +65,15 @@ if ($action === 'login') {
     $email = trim($_POST['email'] ?? '');
     $pass  = $_POST['password'] ?? '';
 
-    $db   = db();
+    $db = db();
+    if (!$db) { echo json_encode(['ok' => false, 'error' => 'Нет подключения к БД']); exit; }
+
     $stmt = $db->prepare('SELECT id, password, name FROM users WHERE email = ?');
+    if (!$stmt) { echo json_encode(['ok' => false, 'error' => 'Таблица users не найдена — запустите schema.sql']); exit; }
+
     $stmt->bind_param('s', $email);
     $stmt->execute();
-    $row  = $stmt->get_result()->fetch_assoc();
+    $row = $stmt->get_result()->fetch_assoc();
 
     if (!$row || !password_verify($pass, $row['password'])) {
         echo json_encode(['ok' => false, 'error' => 'Неверный email или пароль']);

@@ -419,3 +419,14 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
   color:var(--cta);font-weight:600;
   cursor:pointer;text-decoration:underline
 }
+
+/* ============ LOGOUT ============ */
+.logout-bar{display:flex;justify-content:flex-end;padding:10px 20px 0}
+.logout-btn{
+  font-size:12px;font-weight:600;color:var(--t3);
+  cursor:pointer;padding:4px 10px;
+  border:1px solid var(--bd);border-radius:20px;
+  background:#fff;
+  transition:color .2s,border-color .2s
+}
+.logout-btn:hover{color:var(--cta);border-color:var(--cta)}
