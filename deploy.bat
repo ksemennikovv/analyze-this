@@ -14,6 +14,7 @@ if /i "%1"=="full" (
     php ^
     images ^
     robots.txt ^
+    prompt.txt ^
     *.html ^
     -xr!*.bat ^
     -xr!*.zip ^
@@ -34,6 +35,7 @@ if /i "%1"=="full" (
     css ^
     js ^
     php ^
+    prompt.txt ^
     robots.txt ^
     images ^
     *.html ^

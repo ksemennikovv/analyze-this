@@ -10,30 +10,15 @@
 <body>
 <div class="phone">
 
-<div class="sbar">
-  <span>9:41</span>
-  <div class="sbar-r">
-    <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="1" fill="#0F1B2D"/><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0F1B2D"/><rect x="9" y="2" width="3" height="10" rx="1" fill="#0F1B2D"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="rgba(15,27,45,.3)"/></svg>
-    <svg width="24" height="12" viewBox="0 0 24 12"><rect x="0" y="1" width="20" height="10" rx="2" stroke="#0F1B2D" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="#0F1B2D"/><rect x="21" y="4" width="2" height="4" rx=".5" fill="#0F1B2D"/></svg>
-  </div>
-</div>
-
 <div class="page">
 
 <div class="padded">
-  <div class="brand">
-    <div class="logo-orb" id="logoOrb"><span class="logo-orb__rays"><span class="logo-orb__ray" style="transform:rotate(0deg) translate(30px,0)"></span><span class="logo-orb__ray" style="transform:rotate(45deg) translate(30px,0)"></span><span class="logo-orb__ray" style="transform:rotate(90deg) translate(30px,0)"></span><span class="logo-orb__ray" style="transform:rotate(135deg) translate(30px,0)"></span><span class="logo-orb__ray" style="transform:rotate(180deg) translate(30px,0)"></span><span class="logo-orb__ray" style="transform:rotate(225deg) translate(30px,0)"></span><span class="logo-orb__ray" style="transform:rotate(270deg) translate(30px,0)"></span><span class="logo-orb__ray" style="transform:rotate(315deg) translate(30px,0)"></span></span><span class="logo-orb__stars"><span class="logo-orb__star" style="transform:rotate(22.5deg) translate(40px) rotate(-22.5deg);animation-delay:0.00s;animation-duration:2.4s"></span><span class="logo-orb__star" style="transform:rotate(67.5deg) translate(40px) rotate(-67.5deg);animation-delay:-0.35s;animation-duration:2.75s"></span><span class="logo-orb__star" style="transform:rotate(112.5deg) translate(40px) rotate(-112.5deg);animation-delay:-0.70s;animation-duration:3.0999999999999996s"></span><span class="logo-orb__star" style="transform:rotate(157.5deg) translate(40px) rotate(-157.5deg);animation-delay:-1.05s;animation-duration:3.4499999999999997s"></span><span class="logo-orb__star" style="transform:rotate(202.5deg) translate(40px) rotate(-202.5deg);animation-delay:-1.40s;animation-duration:2.4s"></span><span class="logo-orb__star" style="transform:rotate(247.5deg) translate(40px) rotate(-247.5deg);animation-delay:-1.75s;animation-duration:2.75s"></span><span class="logo-orb__star" style="transform:rotate(292.5deg) translate(40px) rotate(-292.5deg);animation-delay:-2.10s;animation-duration:3.0999999999999996s"></span><span class="logo-orb__star" style="transform:rotate(337.5deg) translate(40px) rotate(-337.5deg);animation-delay:-2.45s;animation-duration:3.4499999999999997s"></span></span><img class="logo-orb__image logo-orb__image--idle" src="images/img01.png" alt="NirvaBody" /><img class="logo-orb__image logo-orb__image--walking" src="images/img02.png" alt="" aria-hidden="true" /><img class="logo-orb__image logo-orb__image--walking" src="images/img03.png" alt="" aria-hidden="true" /></div>
-    <div class="brand-text">
-      <span class="brand-name">NIRVABODY · ИИ</span>
-      <span class="brand-desc">Индивидуальный ИИ-разбор<br/>и подбор телесных практик</span>
-    </div>
-  </div>
 
   <p class="lead">Опиши своё состояние и получи персональную практику, чтобы <span class="lead-accent">уйти от панической атаки</span> и почувствовать себя легче прямо сейчас:</p>
 
   <div class="input-box">
-    <textarea class="input-textarea" rows="4" placeholder="Например: я чувствую тревогу, пустоту, нет сил, застряла, не понимаю что делать…"></textarea>
-    <div class="input-mic" title="Голосовой ввод">
+    <textarea id="userText" class="input-textarea" rows="4" placeholder="Например: я чувствую тревогу, пустоту, нет сил, застряла, не понимаю что делать…"></textarea>
+    <div id="micBtn" class="input-mic" title="Голосовой ввод">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/>
         <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
@@ -229,6 +214,20 @@
 
 <p class="footer-note">© NirvaBody · 2026 · Сделано с заботой <span class="heart">♥</span> о тебе</p>
 
+</div>
+
+<div class="padded" id="chatSection" style="display:none">
+  <div class="div" style="margin:20px 0 24px"></div>
+  <p class="section-title">Ваш персональный разбор</p>
+  <div id="chatMessages" class="chat-messages"></div>
+  <div class="input-box chat-input-box">
+    <textarea id="chatInput" class="input-textarea" rows="2" placeholder="Напишите ответ…"></textarea>
+    <button id="chatSend" class="chat-send-btn" aria-label="Отправить">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <div class="navh"><div></div></div>
