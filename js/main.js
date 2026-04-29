@@ -120,8 +120,16 @@ initCarousel('vidSlides','vidPrev','vidNext');
 
   if(!ctaBtn || !chatSect) return;
 
-  var history  = [];
-  var busy     = false;
+  var history = (window.__chatHistory = window.__chatHistory || []);
+  var busy    = false;
+
+  function saveMsg(role, content){
+    fetch('php/history.php', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({role:role, content:content})
+    });
+  }
 
   /* ---------- CTA click ---------- */
   ctaBtn.addEventListener('click', function(){
@@ -151,6 +159,7 @@ initCarousel('vidSlides','vidPrev','vidNext');
   /* ---------- core ---------- */
   function dispatch(text){
     history.push({role:'user', content: text});
+    saveMsg('user', text);
     addBubble('user', text);
 
     var botBubble = addBubble('bot', null); /* null = typing dots */
@@ -179,6 +188,7 @@ initCarousel('vidSlides','vidPrev','vidNext');
             else {
               botBubble.className = 'chat-bubble';
               history.push({role:'assistant', content: full});
+              saveMsg('assistant', full);
               busy = false;
               sendBtn.disabled = false;
             }
@@ -297,4 +307,87 @@ initCarousel('vidSlides','vidPrev','vidNext');
   micBtn.addEventListener('click', function(){
     if(recording) stopRec(); else startRec();
   });
+})();
+
+/* ============ AUTH + HISTORY ============ */
+(function(){
+  var modal    = document.getElementById('authModal');
+  var emailEl  = document.getElementById('authEmail');
+  var passEl   = document.getElementById('authPass');
+  var submitEl = document.getElementById('authSubmit');
+  var errorEl  = document.getElementById('authError');
+  var switchEl = document.getElementById('authSwitch');
+
+  var mode = 'login'; // 'login' | 'register'
+
+  /* toggle login/register */
+  switchEl.addEventListener('click', function(){
+    mode = mode === 'login' ? 'register' : 'login';
+    submitEl.textContent  = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
+    switchEl.textContent  = mode === 'login' ? 'Зарегистрироваться' : 'Войти';
+    submitEl.previousElementSibling.textContent =
+      mode === 'login' ? 'Нет аккаунта?' : 'Уже есть аккаунт?';
+    errorEl.textContent = '';
+  });
+
+  /* submit */
+  submitEl.addEventListener('click', function(){ doAuth(); });
+  [emailEl, passEl].forEach(function(el){
+    el.addEventListener('keydown', function(e){ if(e.key==='Enter') doAuth(); });
+  });
+
+  function doAuth(){
+    errorEl.textContent = '';
+    var fd = new FormData();
+    fd.append('action',   mode);
+    fd.append('email',    emailEl.value.trim());
+    fd.append('password', passEl.value);
+
+    fetch('php/auth.php', {method:'POST', body:fd})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(!d.ok){ errorEl.textContent = d.error || 'Ошибка'; return; }
+        onAuthed();
+      })
+      .catch(function(){ errorEl.textContent = 'Ошибка соединения'; });
+  }
+
+  function onAuthed(){
+    modal.classList.add('hidden');
+    loadHistory();
+  }
+
+  /* load history from DB */
+  function loadHistory(){
+    fetch('php/history.php')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(!d.ok || !d.messages.length) return;
+
+        var chatSect  = document.getElementById('chatSection');
+        var msgsList  = document.getElementById('chatMessages');
+        var histArr   = window.__chatHistory || [];
+
+        chatSect.style.display = 'block';
+        d.messages.forEach(function(m){
+          histArr.push({role: m.role, content: m.content});
+          var wrap   = document.createElement('div');
+          wrap.className = 'chat-msg chat-msg--' + (m.role === 'user' ? 'user' : 'bot');
+          var bubble = document.createElement('div');
+          bubble.className = 'chat-bubble';
+          bubble.textContent = m.content;
+          wrap.appendChild(bubble);
+          msgsList.appendChild(wrap);
+        });
+        window.__chatHistory = histArr;
+      });
+  }
+
+  /* check session on load */
+  var fd = new FormData();
+  fd.append('action','check');
+  fetch('php/auth.php', {method:'POST', body:fd})
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if(d.ok) onAuthed(); });
+
 })();

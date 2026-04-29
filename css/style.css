@@ -357,3 +357,65 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .chat-send-btn:hover{transform:scale(1.07);box-shadow:0 4px 12px rgba(232,155,44,.42)}
 .chat-send-btn:active{transform:scale(.95)}
 .chat-send-btn:disabled{opacity:.45;cursor:default;transform:none}
+
+/* ============ AUTH MODAL ============ */
+.auth-modal{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(10,20,35,.55);
+  backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  animation:fu .3s ease
+}
+.auth-modal.hidden{display:none}
+
+.auth-card{
+  background:var(--bg);
+  border-radius:28px;
+  padding:32px 24px 28px;
+  width:340px;max-width:100%;
+  box-shadow:0 24px 70px rgba(15,27,45,.28);
+  display:flex;flex-direction:column;gap:14px
+}
+
+.auth-logo{
+  font-size:15px;font-weight:800;
+  letter-spacing:1.2px;color:var(--t1);
+  text-align:center
+}
+.auth-sub{
+  font-size:13px;color:var(--t3);
+  text-align:center;margin-top:-6px;
+  font-weight:400;line-height:1.4
+}
+
+.auth-error{
+  font-size:13px;color:#DC2626;
+  text-align:center;min-height:18px;
+  font-weight:500
+}
+
+.auth-input{
+  width:100%;padding:14px 16px;
+  border:1.5px solid var(--bd);
+  border-radius:14px;
+  font-family:inherit;font-size:15px;
+  color:var(--t1);background:#fff;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s
+}
+.auth-input:focus{
+  border-color:rgba(255,122,69,.5);
+  box-shadow:0 0 0 3px rgba(255,122,69,.08)
+}
+
+.auth-btn{margin-bottom:0}
+
+.auth-toggle{
+  font-size:13px;color:var(--t3);
+  text-align:center;font-weight:400
+}
+.auth-toggle span{
+  color:var(--cta);font-weight:600;
+  cursor:pointer;text-decoration:underline
+}
