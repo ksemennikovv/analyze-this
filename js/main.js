@@ -161,9 +161,12 @@ initCarousel('vidSlides','vidPrev','vidNext');
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({messages: history})
-
     })
     .then(function(resp){
+      if(!resp.ok){
+        resp.text().then(function(t){ onErr(botBubble, 'Ошибка ' + resp.status + ': ' + t.slice(0,120)); });
+        return;
+      }
       var reader  = resp.body.getReader();
       var decoder = new TextDecoder();
       var buf     = '';
@@ -172,9 +175,13 @@ initCarousel('vidSlides','vidPrev','vidNext');
       function read(){
         reader.read().then(function(chunk){
           if(chunk.done){
-            history.push({role:'assistant', content: full});
-            busy = false;
-            sendBtn.disabled = false;
+            if(!full) onErr(botBubble, 'Пустой ответ от сервера');
+            else {
+              botBubble.className = 'chat-bubble';
+              history.push({role:'assistant', content: full});
+              busy = false;
+              sendBtn.disabled = false;
+            }
             return;
           }
           buf += decoder.decode(chunk.value, {stream:true});
@@ -187,8 +194,12 @@ initCarousel('vidSlides','vidPrev','vidNext');
             if(raw === '[DONE]') return;
             try{
               var ev = JSON.parse(raw);
+              if(ev.type === 'error'){
+                onErr(botBubble, ev.error && ev.error.message ? ev.error.message : 'Ошибка API');
+              }
               if(ev.type === 'content_block_delta' && ev.delta && ev.delta.type === 'text_delta'){
                 full += ev.delta.text;
+                botBubble.className = 'chat-bubble';
                 botBubble.textContent = full;
                 botBubble.parentNode.scrollIntoView({behavior:'smooth', block:'end'});
               }
@@ -196,15 +207,16 @@ initCarousel('vidSlides','vidPrev','vidNext');
           });
 
           read();
-        }).catch(function(){ onErr(botBubble); });
+        }).catch(function(){ onErr(botBubble, 'Ошибка чтения потока'); });
       }
       read();
     })
-    .catch(function(){ onErr(botBubble); });
+    .catch(function(e){ onErr(botBubble, 'Сеть: ' + e.message); });
   }
 
-  function onErr(bubble){
-    bubble.textContent = 'Ошибка соединения. Попробуйте ещё раз.';
+  function onErr(bubble, msg){
+    bubble.className = 'chat-bubble';
+    bubble.textContent = '⚠ ' + (msg || 'Ошибка соединения');
     busy = false;
     sendBtn.disabled = false;
   }

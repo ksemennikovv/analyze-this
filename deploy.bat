@@ -37,7 +37,6 @@ if /i "%1"=="full" (
     php ^
     prompt.txt ^
     robots.txt ^
-    images ^
     *.html ^
     -xr!*.bat ^
     -xr!*.zip ^
