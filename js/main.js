@@ -150,9 +150,20 @@ initCarousel('vidSlides','vidPrev','vidNext');
     dispatch(t);
   }
 
+  /* ---------- save message to DB (logged-in users only) ---------- */
+  function saveMsg(role, content){
+    if(!window.__isLoggedIn) return;
+    fetch('php/history.php', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({role:role, content:content})
+    });
+  }
+
   /* ---------- core ---------- */
   function dispatch(text){
     history.push({role:'user', content: text});
+    saveMsg('user', text);
     addBubble('user', text);
 
     var botBubble = addBubble('bot', null);
@@ -169,15 +180,19 @@ initCarousel('vidSlides','vidPrev','vidNext');
         resp.text().then(function(t){ onErr(botBubble, 'Ошибка ' + resp.status + ': ' + t.slice(0,120)); });
         return;
       }
-      var reader  = resp.body.getReader();
-      var decoder = new TextDecoder();
-      var buf     = '';
-      var full    = '';
+      var reader   = resp.body.getReader();
+      var decoder  = new TextDecoder();
+      var buf      = '';
+      var full     = '';
+      var hadError = false;
 
       function read(){
         reader.read().then(function(chunk){
           if(chunk.done){
-            if(!full) { onErr(botBubble, 'Пустой ответ от сервера'); return; }
+            if(!full){
+              if(!hadError) onErr(botBubble, 'Пустой ответ от сервера');
+              return;
+            }
 
             var ended = full.indexOf('[END_SESSION]') !== -1;
             full = full.replace('[END_SESSION]', '').trim();
@@ -185,10 +200,12 @@ initCarousel('vidSlides','vidPrev','vidNext');
             botBubble.className = 'chat-bubble';
             botBubble.textContent = full;
             history.push({role:'assistant', content: full});
+            saveMsg('assistant', full);
             busy = false;
             sendBtn.disabled = false;
 
-            if(ended || history.length >= SESSION_TRIGGER){
+            /* only trigger reg flow for anonymous users */
+            if(!window.__isLoggedIn && (ended || history.length >= SESSION_TRIGGER)){
               if(chatInputBox) chatInputBox.style.display = 'none';
               if(window.__onChatEnd) window.__onChatEnd(history);
             }
@@ -205,6 +222,7 @@ initCarousel('vidSlides','vidPrev','vidNext');
             try{
               var ev = JSON.parse(raw);
               if(ev.type === 'error'){
+                hadError = true;
                 onErr(botBubble, ev.error && ev.error.message ? ev.error.message : 'Ошибка API');
               }
               if(ev.type === 'content_block_delta' && ev.delta && ev.delta.type === 'text_delta'){
@@ -328,6 +346,34 @@ initCarousel('vidSlides','vidPrev','vidNext');
 
   var pendingEmail = '';
 
+  /* ---------- load chat history from DB and show chatSection ---------- */
+  function loadHistory(cb){
+    var chatSect = document.getElementById('chatSection');
+    var msgsList = document.getElementById('chatMessages');
+
+    fetch('php/history.php')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.ok && d.messages && d.messages.length){
+          if(chatSect) chatSect.style.display = 'block';
+          window.__chatHistory = window.__chatHistory || [];
+          d.messages.forEach(function(m){
+            window.__chatHistory.push({role: m.role, content: m.content});
+            var wrap   = document.createElement('div');
+            wrap.className = 'chat-msg chat-msg--' + (m.role === 'user' ? 'user' : 'bot');
+            var bubble = document.createElement('div');
+            bubble.className = 'chat-bubble';
+            bubble.textContent = m.content;
+            wrap.appendChild(bubble);
+            msgsList.appendChild(wrap);
+          });
+        }
+        if(cb) cb();
+      })
+      .catch(function(){ if(cb) cb(); });
+  }
+  window.__loadHistory = loadHistory;
+
   /* ---------- session check on page load ---------- */
   var fd = new FormData();
   fd.append('action', 'check');
@@ -336,8 +382,8 @@ initCarousel('vidSlides','vidPrev','vidNext');
     .then(function(d){
       if(d.ok){
         if(heroSection) heroSection.style.display = 'none';
-        showVideo(d.name, d.video);
         if(window.__setMenuUser) window.__setMenuUser(d.name, '');
+        loadHistory(function(){ showVideo(d.name, d.video); });
       }
     });
 
@@ -476,12 +522,18 @@ initCarousel('vidSlides','vidPrev','vidNext');
 
 /* ============ SIDE MENU ============ */
 (function(){
-  var toggle   = document.getElementById('menuToggle');
-  var menu     = document.getElementById('sideMenu');
-  var overlay  = document.getElementById('sideMenuOverlay');
-  var closeBtn = document.getElementById('sideMenuClose');
-  var nameEl   = document.getElementById('menuUserName');
-  var logoutBtn= document.getElementById('menuLogoutBtn');
+  var toggle      = document.getElementById('menuToggle');
+  var menu        = document.getElementById('sideMenu');
+  var overlay     = document.getElementById('sideMenuOverlay');
+  var closeBtn    = document.getElementById('sideMenuClose');
+  var nameEl      = document.getElementById('menuUserName');
+  var logoutBtn   = document.getElementById('menuLogoutBtn');
+  var loginArea   = document.getElementById('menuLoginArea');
+  var authedArea  = document.getElementById('menuAuthedArea');
+  var emailEl     = document.getElementById('menuEmail');
+  var passEl      = document.getElementById('menuPass');
+  var loginBtn    = document.getElementById('menuLoginBtn');
+  var loginErrEl  = document.getElementById('menuLoginError');
 
   function openMenu(){ menu.classList.add('open'); overlay.classList.add('open'); }
   function closeMenu(){ menu.classList.remove('open'); overlay.classList.remove('open'); }
@@ -490,21 +542,76 @@ initCarousel('vidSlides','vidPrev','vidNext');
   if(closeBtn) closeBtn.addEventListener('click', closeMenu);
   if(overlay)  overlay.addEventListener('click', closeMenu);
 
-  /* set username from auth */
+  /* ---------- login form ---------- */
+  function doLogin(){
+    if(loginErrEl) loginErrEl.textContent = '';
+    var email = emailEl ? emailEl.value.trim() : '';
+    var pass  = passEl  ? passEl.value         : '';
+    if(!email || !pass){ if(loginErrEl) loginErrEl.textContent = 'Введите email и пароль'; return; }
+
+    if(loginBtn){ loginBtn.disabled = true; loginBtn.textContent = 'Входим…'; }
+
+    var fd = new FormData();
+    fd.append('action',   'login');
+    fd.append('email',    email);
+    fd.append('password', pass);
+
+    fetch('php/auth.php', {method:'POST', body:fd})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(loginBtn){ loginBtn.disabled = false; loginBtn.textContent = 'Войти'; }
+        if(!d.ok){ if(loginErrEl) loginErrEl.textContent = d.error || 'Неверный email или пароль'; return; }
+        if(passEl) passEl.value = '';
+        closeMenu();
+        window.__setMenuUser(d.name || '', email);
+        var heroSection = document.getElementById('heroSection');
+        if(heroSection) heroSection.style.display = 'none';
+        /* load history then video */
+        var fd2 = new FormData(); fd2.append('action','check');
+        fetch('php/auth.php',{method:'POST',body:fd2})
+          .then(function(r){ return r.json(); })
+          .then(function(d2){
+            if(!d2.ok || !window.__showVideo) return;
+            if(window.__loadHistory){
+              window.__loadHistory(function(){ window.__showVideo(d2.name, d2.video); });
+            } else {
+              window.__showVideo(d2.name, d2.video);
+            }
+          });
+      })
+      .catch(function(){
+        if(loginBtn){ loginBtn.disabled = false; loginBtn.textContent = 'Войти'; }
+        if(loginErrEl) loginErrEl.textContent = 'Ошибка соединения';
+      });
+  }
+
+  if(loginBtn) loginBtn.addEventListener('click', doLogin);
+  [emailEl, passEl].forEach(function(el){
+    if(el) el.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+  });
+
+  /* ---------- set user (called after login/verify/session check) ---------- */
   window.__setMenuUser = function(name, email){
-    if(!nameEl) return;
-    nameEl.textContent = name || (email ? email.split('@')[0] : 'Пользователь');
-    if(toggle) toggle.style.display = 'flex';
+    window.__isLoggedIn = true;
+    if(nameEl) nameEl.textContent = name || (email ? email.split('@')[0] : 'Пользователь');
+    if(loginArea)  loginArea.style.display  = 'none';
+    if(authedArea) authedArea.style.display = 'block';
+    if(logoutBtn)  logoutBtn.style.display  = 'flex';
   };
 
-  /* logout */
+  /* ---------- logout ---------- */
   if(logoutBtn){
     logoutBtn.addEventListener('click', function(){
       var fd = new FormData();
       fd.append('action','logout');
       fetch('php/auth.php',{method:'POST',body:fd}).then(function(){
         closeMenu();
-        if(toggle) toggle.style.display = 'none';
+        if(loginArea)  loginArea.style.display  = 'flex';
+        if(authedArea) authedArea.style.display = 'none';
+        if(logoutBtn)  logoutBtn.style.display  = 'none';
+        if(emailEl)    emailEl.value = '';
+        if(passEl)     passEl.value  = '';
+        if(loginErrEl) loginErrEl.textContent = '';
         var heroSection   = document.getElementById('heroSection');
         var chatSection   = document.getElementById('chatSection');
         var regSection    = document.getElementById('regSection');
@@ -514,23 +621,23 @@ initCarousel('vidSlides','vidPrev','vidNext');
         var chatInputBox  = document.getElementById('chatInputBox');
         if(heroSection)   heroSection.style.display = 'block';
         if(chatSection)   chatSection.style.display = 'none';
-        if(regSection)    regSection.style.display = 'none';
+        if(regSection)    regSection.style.display  = 'none';
         if(verifySection) verifySection.style.display = 'none';
         if(videoSection)  videoSection.style.display = 'none';
         if(msgs)          msgs.innerHTML = '';
         if(chatInputBox)  chatInputBox.style.display = '';
-        window.__chatHistory     = [];
-        window.__pendingHistory  = null;
+        window.__isLoggedIn     = false;
+        window.__chatHistory    = [];
+        window.__pendingHistory = null;
       });
     });
   }
 
-  /* language toggle */
+  /* ---------- language toggle ---------- */
   document.querySelectorAll('.lang-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('lang-btn--active'); });
       btn.classList.add('lang-btn--active');
-      /* language switching UI only for now */
     });
   });
 })();

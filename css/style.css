@@ -468,7 +468,7 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
   display:flex;flex-direction:column;
   padding:20px;
   overflow-y:auto;
-  transform:translateX(100%);
+  transform:translateX(calc(100% + 50vw));
   transition:transform .35s cubic-bezier(.22,1,.36,1);
   box-shadow:-8px 0 32px rgba(15,27,45,.12)
 }
@@ -577,3 +577,8 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
   border-radius:50%;display:flex;align-items:center;justify-content:center
 }
 .video-placeholder__text{font-size:14px;color:var(--t3);font-weight:500}
+
+/* ============ MENU LOGIN FORM ============ */
+.side-menu__login{display:flex;flex-direction:column;gap:12px;padding:8px 0}
+.side-menu__login-title{font-size:15px;font-weight:700;color:var(--t1);text-align:center}
+.menu-login-btn{margin-bottom:0}

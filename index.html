@@ -26,7 +26,7 @@
 
 <div class="page">
 
-<div class="padded" id="heroSection">
+<div class="padded">
 
   <div class="brand">
     <div class="logo-orb" id="logoOrb">
@@ -58,10 +58,14 @@
       <span class="brand-name">NIRVABODY · ИИ</span>
       <span class="brand-desc">Индивидуальный ИИ-разбор<br/>и подбор телесных практик</span>
     </div>
-    <button id="menuToggle" class="menu-toggle" style="display:none" aria-label="Меню">
+    <button id="menuToggle" class="menu-toggle" aria-label="Меню">
       <span></span><span></span><span></span>
     </button>
   </div>
+
+</div>
+
+<div class="padded" id="heroSection">
 
   <p class="lead">Опиши своё состояние и получи персональную практику, чтобы <span class="lead-accent">уйти от панической атаки</span> и почувствовать себя легче прямо сейчас:</p>
 
@@ -363,17 +367,29 @@
     </svg>
   </button>
 
-  <div class="side-menu__user">
-    <div class="side-menu__avatar">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6" fill="none"/>
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
-      </svg>
-    </div>
-    <div id="menuUserName" class="side-menu__name">—</div>
-    <div class="side-menu__plan">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#FFB800"/></svg>
-      Стартовый · бесплатный
+  <!-- Shown when NOT logged in -->
+  <div id="menuLoginArea" class="side-menu__login">
+    <p class="side-menu__login-title">Войти в аккаунт</p>
+    <div id="menuLoginError" class="auth-error"></div>
+    <input type="email" id="menuEmail" class="auth-input" placeholder="Email" autocomplete="email">
+    <input type="password" id="menuPass" class="auth-input" placeholder="Пароль" autocomplete="current-password">
+    <button id="menuLoginBtn" class="cta-btn menu-login-btn">Войти</button>
+  </div>
+
+  <!-- Shown when logged in -->
+  <div id="menuAuthedArea" style="display:none">
+    <div class="side-menu__user">
+      <div class="side-menu__avatar">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div id="menuUserName" class="side-menu__name">—</div>
+      <div class="side-menu__plan">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#FFB800"/></svg>
+        Стартовый · бесплатный
+      </div>
     </div>
   </div>
 
@@ -389,7 +405,7 @@
 
   <div class="side-menu__divider"></div>
 
-  <button id="menuLogoutBtn" class="side-menu__logout">
+  <button id="menuLogoutBtn" class="side-menu__logout" style="display:none">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
       <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
