@@ -10,10 +10,20 @@ $action = $_POST['action'] ?? '';
 
 /* ---- check session ---- */
 if ($action === 'check') {
+    if (empty($_SESSION['user_id'])) {
+        echo json_encode(['ok' => false]);
+        exit;
+    }
+    $db = db();
+    $stmt = $db->prepare('SELECT name, video_url FROM users WHERE id = ?');
+    $stmt->bind_param('i', $_SESSION['user_id']);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
     echo json_encode([
-        'ok'   => !empty($_SESSION['user_id']),
-        'name' => $_SESSION['user_name'] ?? '',
-        'id'   => $_SESSION['user_id'] ?? null,
+        'ok'    => true,
+        'name'  => $row['name'] ?? $_SESSION['user_name'] ?? '',
+        'video' => $row['video_url'] ?? 'videos/practice.mp4',
+        'id'    => $_SESSION['user_id'],
     ]);
     exit;
 }

@@ -111,25 +111,19 @@ initCarousel('vidSlides','vidPrev','vidNext');
 })();
 
 (function(){
-  var ctaBtn    = document.getElementById('ctaMain');
-  var chatSect  = document.getElementById('chatSection');
-  var msgsList  = document.getElementById('chatMessages');
-  var chatInput = document.getElementById('chatInput');
-  var sendBtn   = document.getElementById('chatSend');
-  var userArea  = document.getElementById('userText');
+  var ctaBtn       = document.getElementById('ctaMain');
+  var chatSect     = document.getElementById('chatSection');
+  var msgsList     = document.getElementById('chatMessages');
+  var chatInput    = document.getElementById('chatInput');
+  var sendBtn      = document.getElementById('chatSend');
+  var userArea     = document.getElementById('userText');
+  var chatInputBox = document.getElementById('chatInputBox');
 
   if(!ctaBtn || !chatSect) return;
 
-  var history = (window.__chatHistory = window.__chatHistory || []);
-  var busy    = false;
-
-  function saveMsg(role, content){
-    fetch('php/history.php', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({role:role, content:content})
-    });
-  }
+  var history         = (window.__chatHistory = window.__chatHistory || []);
+  var busy            = false;
+  var SESSION_TRIGGER = 6; /* history entries (user+assistant) before forced trigger */
 
   /* ---------- CTA click ---------- */
   ctaBtn.addEventListener('click', function(){
@@ -159,10 +153,9 @@ initCarousel('vidSlides','vidPrev','vidNext');
   /* ---------- core ---------- */
   function dispatch(text){
     history.push({role:'user', content: text});
-    saveMsg('user', text);
     addBubble('user', text);
 
-    var botBubble = addBubble('bot', null); /* null = typing dots */
+    var botBubble = addBubble('bot', null);
     busy = true;
     sendBtn.disabled = true;
 
@@ -184,13 +177,20 @@ initCarousel('vidSlides','vidPrev','vidNext');
       function read(){
         reader.read().then(function(chunk){
           if(chunk.done){
-            if(!full) onErr(botBubble, 'Пустой ответ от сервера');
-            else {
-              botBubble.className = 'chat-bubble';
-              history.push({role:'assistant', content: full});
-              saveMsg('assistant', full);
-              busy = false;
-              sendBtn.disabled = false;
+            if(!full) { onErr(botBubble, 'Пустой ответ от сервера'); return; }
+
+            var ended = full.indexOf('[END_SESSION]') !== -1;
+            full = full.replace('[END_SESSION]', '').trim();
+
+            botBubble.className = 'chat-bubble';
+            botBubble.textContent = full;
+            history.push({role:'assistant', content: full});
+            busy = false;
+            sendBtn.disabled = false;
+
+            if(ended || history.length >= SESSION_TRIGGER){
+              if(chatInputBox) chatInputBox.style.display = 'none';
+              if(window.__onChatEnd) window.__onChatEnd(history);
             }
             return;
           }
@@ -210,7 +210,7 @@ initCarousel('vidSlides','vidPrev','vidNext');
               if(ev.type === 'content_block_delta' && ev.delta && ev.delta.type === 'text_delta'){
                 full += ev.delta.text;
                 botBubble.className = 'chat-bubble';
-                botBubble.textContent = full;
+                botBubble.textContent = full.replace('[END_SESSION]', '').trim();
                 botBubble.parentNode.scrollIntoView({behavior:'smooth', block:'end'});
               }
             }catch(e){}
@@ -231,14 +231,12 @@ initCarousel('vidSlides','vidPrev','vidNext');
     sendBtn.disabled = false;
   }
 
-  /* ---------- DOM helpers ---------- */
   function addBubble(role, text){
     var wrap   = document.createElement('div');
     wrap.className = 'chat-msg chat-msg--' + role;
     var bubble = document.createElement('div');
 
     if(text === null){
-      /* typing indicator */
       bubble.className = 'chat-bubble chat-typing';
       bubble.innerHTML = '<span></span><span></span><span></span>';
     } else {
@@ -309,105 +307,230 @@ initCarousel('vidSlides','vidPrev','vidNext');
   });
 })();
 
-/* ============ AUTH + HISTORY ============ */
+/* ============ AUTH FLOW ============ */
 (function(){
-  var modal    = document.getElementById('authModal');
-  var emailEl  = document.getElementById('authEmail');
-  var passEl   = document.getElementById('authPass');
-  var submitEl = document.getElementById('authSubmit');
-  var errorEl  = document.getElementById('authError');
-  var switchEl = document.getElementById('authSwitch');
+  var heroSection   = document.getElementById('heroSection');
+  var regSection    = document.getElementById('regSection');
+  var verifySection = document.getElementById('verifySection');
+  var videoSection  = document.getElementById('videoSection');
+  var regEmail      = document.getElementById('regEmail');
+  var regCheck1     = document.getElementById('regCheck1');
+  var regCheck2     = document.getElementById('regCheck2');
+  var regSubmit     = document.getElementById('regSubmit');
+  var regError      = document.getElementById('regError');
+  var verifyCode    = document.getElementById('verifyCode');
+  var verifySubmit  = document.getElementById('verifySubmit');
+  var verifyError   = document.getElementById('verifyError');
+  var resendCode    = document.getElementById('resendCode');
+  var videoGreeting = document.getElementById('videoGreeting');
+  var practiceVideo = document.getElementById('practiceVideo');
+  var videoPlaceholder = document.getElementById('videoPlaceholder');
 
-  var mode = 'login'; // 'login' | 'register'
+  var pendingEmail = '';
 
-  /* toggle login/register */
-  switchEl.addEventListener('click', function(){
-    mode = mode === 'login' ? 'register' : 'login';
-    submitEl.textContent  = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
-    switchEl.textContent  = mode === 'login' ? 'Зарегистрироваться' : 'Войти';
-    submitEl.previousElementSibling.textContent =
-      mode === 'login' ? 'Нет аккаунта?' : 'Уже есть аккаунт?';
-    errorEl.textContent = '';
-  });
+  /* ---------- session check on page load ---------- */
+  var fd = new FormData();
+  fd.append('action', 'check');
+  fetch('php/auth.php', {method:'POST', body:fd})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.ok){
+        if(heroSection) heroSection.style.display = 'none';
+        showVideo(d.name, d.video);
+        if(window.__setMenuUser) window.__setMenuUser(d.name, '');
+      }
+    });
 
-  /* submit */
-  submitEl.addEventListener('click', function(){ doAuth(); });
-  [emailEl, passEl].forEach(function(el){
-    el.addEventListener('keydown', function(e){ if(e.key==='Enter') doAuth(); });
-  });
+  /* ---------- called when chat ends (from chat IIFE) ---------- */
+  window.__onChatEnd = function(history){
+    window.__pendingHistory = history;
+    if(regSection){
+      regSection.style.display = 'block';
+      setTimeout(function(){ regSection.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
+    }
+  };
 
-  function doAuth(){
-    errorEl.textContent = '';
-    var fd = new FormData();
-    fd.append('action',   mode);
-    fd.append('email',    emailEl.value.trim());
-    fd.append('password', passEl.value);
+  /* ---------- extract name from chat history ---------- */
+  function extractName(history){
+    for(var i = 1; i < history.length; i++){
+      if(history[i-1].role === 'assistant' &&
+         /им[яе]|зовут|назыв/i.test(history[i-1].content) &&
+         history[i].role === 'user'){
+        var n = history[i].content.trim();
+        if(n.length < 40) return n;
+      }
+    }
+    return '';
+  }
 
-    fetch('php/auth.php', {method:'POST', body:fd})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(!d.ok){ errorEl.textContent = d.error || 'Ошибка'; return; }
-        onAuthed();
+  /* ---------- registration form ---------- */
+  function submitReg(){
+    if(regError) regError.textContent = '';
+    var email = regEmail ? regEmail.value.trim() : '';
+    if(!email){ if(regError) regError.textContent = 'Введите email'; return; }
+    if(!regCheck1 || !regCheck1.checked){ if(regError) regError.textContent = 'Подтвердите условия использования'; return; }
+    if(!regCheck2 || !regCheck2.checked){ if(regError) regError.textContent = 'Подтвердите согласие на обработку данных'; return; }
+
+    pendingEmail = email;
+    if(regSubmit){ regSubmit.disabled = true; regSubmit.textContent = 'Отправляем…'; }
+
+    fetch('php/register.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email:   email,
+        name:    extractName(window.__pendingHistory || []),
+        history: window.__pendingHistory || []
       })
-      .catch(function(){ errorEl.textContent = 'Ошибка соединения'; });
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(regSubmit){ regSubmit.disabled = false; regSubmit.textContent = 'Получить практику'; }
+      if(!d.ok){ if(regError) regError.textContent = d.error || 'Ошибка'; return; }
+      if(regSection) regSection.style.display = 'none';
+      if(verifySection){
+        verifySection.style.display = 'block';
+        setTimeout(function(){ verifySection.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
+        if(verifyCode) verifyCode.focus();
+      }
+    })
+    .catch(function(){
+      if(regSubmit){ regSubmit.disabled = false; regSubmit.textContent = 'Получить практику'; }
+      if(regError) regError.textContent = 'Ошибка соединения';
+    });
   }
 
-  function onAuthed(){
-    modal.classList.add('hidden');
-    var lb = document.getElementById('logoutBar');
-    if(lb) lb.style.display = 'flex';
-    loadHistory();
+  if(regSubmit) regSubmit.addEventListener('click', submitReg);
+  if(regEmail)  regEmail.addEventListener('keydown', function(e){ if(e.key==='Enter') submitReg(); });
+
+  /* ---------- resend code ---------- */
+  if(resendCode){
+    resendCode.addEventListener('click', function(){
+      if(!pendingEmail) return;
+      fetch('php/register.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: pendingEmail, history: window.__pendingHistory || []})
+      });
+      if(verifyError) verifyError.textContent = 'Код отправлен повторно';
+    });
   }
 
-  var logoutBtn = document.getElementById('logoutBtn');
+  /* ---------- verification form ---------- */
+  function submitVerify(){
+    if(verifyError) verifyError.textContent = '';
+    var code = verifyCode ? verifyCode.value.trim() : '';
+    if(code.length !== 6){ if(verifyError) verifyError.textContent = 'Введите 6-значный код'; return; }
+
+    if(verifySubmit){ verifySubmit.disabled = true; verifySubmit.textContent = 'Проверяем…'; }
+
+    fetch('php/verify.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email: pendingEmail, code: code})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(verifySubmit){ verifySubmit.disabled = false; verifySubmit.textContent = 'Подтвердить'; }
+      if(!d.ok){ if(verifyError) verifyError.textContent = d.error || 'Ошибка'; return; }
+      if(verifySection) verifySection.style.display = 'none';
+      showVideo(d.name, d.video);
+      if(window.__setMenuUser) window.__setMenuUser(d.name, pendingEmail);
+    })
+    .catch(function(){
+      if(verifySubmit){ verifySubmit.disabled = false; verifySubmit.textContent = 'Подтвердить'; }
+      if(verifyError) verifyError.textContent = 'Ошибка соединения';
+    });
+  }
+
+  if(verifySubmit) verifySubmit.addEventListener('click', submitVerify);
+  if(verifyCode)   verifyCode.addEventListener('keydown', function(e){ if(e.key==='Enter') submitVerify(); });
+
+  /* ---------- show video section ---------- */
+  function showVideo(name, videoUrl){
+    if(!videoSection) return;
+    videoSection.style.display = 'block';
+    setTimeout(function(){ videoSection.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
+
+    if(videoGreeting){
+      videoGreeting.textContent = 'Здравствуйте' + (name ? ', ' + name : '') + '! Вот ваша практика:';
+    }
+
+    var src = videoUrl || 'videos/practice.mp4';
+    if(practiceVideo){
+      practiceVideo.addEventListener('loadeddata', function(){
+        if(videoPlaceholder) videoPlaceholder.style.display = 'none';
+        practiceVideo.style.display = 'block';
+      }, {once: true});
+      practiceVideo.addEventListener('error', function(){
+        practiceVideo.style.display = 'none';
+        if(videoPlaceholder) videoPlaceholder.style.display = 'flex';
+      }, {once: true});
+      practiceVideo.src = src;
+      practiceVideo.load();
+    }
+  }
+
+  window.__showVideo = showVideo;
+})();
+
+/* ============ SIDE MENU ============ */
+(function(){
+  var toggle   = document.getElementById('menuToggle');
+  var menu     = document.getElementById('sideMenu');
+  var overlay  = document.getElementById('sideMenuOverlay');
+  var closeBtn = document.getElementById('sideMenuClose');
+  var nameEl   = document.getElementById('menuUserName');
+  var logoutBtn= document.getElementById('menuLogoutBtn');
+
+  function openMenu(){ menu.classList.add('open'); overlay.classList.add('open'); }
+  function closeMenu(){ menu.classList.remove('open'); overlay.classList.remove('open'); }
+
+  if(toggle)   toggle.addEventListener('click', openMenu);
+  if(closeBtn) closeBtn.addEventListener('click', closeMenu);
+  if(overlay)  overlay.addEventListener('click', closeMenu);
+
+  /* set username from auth */
+  window.__setMenuUser = function(name, email){
+    if(!nameEl) return;
+    nameEl.textContent = name || (email ? email.split('@')[0] : 'Пользователь');
+    if(toggle) toggle.style.display = 'flex';
+  };
+
+  /* logout */
   if(logoutBtn){
     logoutBtn.addEventListener('click', function(){
       var fd = new FormData();
-      fd.append('action', 'logout');
-      fetch('php/auth.php', {method:'POST', body:fd}).then(function(){
-        document.getElementById('logoutBar').style.display = 'none';
-        modal.classList.remove('hidden');
-        // clear chat
-        var msgs = document.getElementById('chatMessages');
-        if(msgs) msgs.innerHTML = '';
-        var chat = document.getElementById('chatSection');
-        if(chat) chat.style.display = 'none';
-        window.__chatHistory = [];
+      fd.append('action','logout');
+      fetch('php/auth.php',{method:'POST',body:fd}).then(function(){
+        closeMenu();
+        if(toggle) toggle.style.display = 'none';
+        var heroSection   = document.getElementById('heroSection');
+        var chatSection   = document.getElementById('chatSection');
+        var regSection    = document.getElementById('regSection');
+        var verifySection = document.getElementById('verifySection');
+        var videoSection  = document.getElementById('videoSection');
+        var msgs          = document.getElementById('chatMessages');
+        var chatInputBox  = document.getElementById('chatInputBox');
+        if(heroSection)   heroSection.style.display = 'block';
+        if(chatSection)   chatSection.style.display = 'none';
+        if(regSection)    regSection.style.display = 'none';
+        if(verifySection) verifySection.style.display = 'none';
+        if(videoSection)  videoSection.style.display = 'none';
+        if(msgs)          msgs.innerHTML = '';
+        if(chatInputBox)  chatInputBox.style.display = '';
+        window.__chatHistory     = [];
+        window.__pendingHistory  = null;
       });
     });
   }
 
-  /* load history from DB */
-  function loadHistory(){
-    fetch('php/history.php')
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(!d.ok || !d.messages.length) return;
-
-        var chatSect  = document.getElementById('chatSection');
-        var msgsList  = document.getElementById('chatMessages');
-        var histArr   = window.__chatHistory || [];
-
-        chatSect.style.display = 'block';
-        d.messages.forEach(function(m){
-          histArr.push({role: m.role, content: m.content});
-          var wrap   = document.createElement('div');
-          wrap.className = 'chat-msg chat-msg--' + (m.role === 'user' ? 'user' : 'bot');
-          var bubble = document.createElement('div');
-          bubble.className = 'chat-bubble';
-          bubble.textContent = m.content;
-          wrap.appendChild(bubble);
-          msgsList.appendChild(wrap);
-        });
-        window.__chatHistory = histArr;
-      });
-  }
-
-  /* check session on load */
-  var fd = new FormData();
-  fd.append('action','check');
-  fetch('php/auth.php', {method:'POST', body:fd})
-    .then(function(r){ return r.json(); })
-    .then(function(d){ if(d.ok) onAuthed(); });
-
+  /* language toggle */
+  document.querySelectorAll('.lang-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('lang-btn--active'); });
+      btn.classList.add('lang-btn--active');
+      /* language switching UI only for now */
+    });
+  });
 })();
