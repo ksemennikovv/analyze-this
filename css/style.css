@@ -231,8 +231,10 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
   transform-origin:center;
   display:block;
 }
-.logo-orb__rays{animation:raysSway 8s ease-in-out infinite}
-.logo-orb__stars{animation:starsOrbit 28s linear infinite}
+.logo-orb__rays{animation:raysRotate 12s linear infinite}
+.logo-orb__stars{animation:starsOrbit 20s linear infinite}
+.logo-orb:hover .logo-orb__rays,.logo-orb.is-active .logo-orb__rays{animation-duration:4s}
+.logo-orb:hover .logo-orb__stars,.logo-orb.is-active .logo-orb__stars{animation-duration:7s}
 .logo-orb__ray{
   position:absolute;
   left:50%;
@@ -278,17 +280,17 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
   0%,100%{transform:scale(1)}
   50%{transform:scale(1.015)}
 }
-@keyframes raysSway{
-  0%,100%{transform:rotate(0deg)}
-  50%{transform:rotate(6deg)}
+@keyframes raysRotate{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
 }
 @keyframes starsOrbit{
   from{transform:rotate(0deg)}
-  to{transform:rotate(18deg)}
+  to{transform:rotate(360deg)}
 }
 @keyframes starTwinkle{
-  0%,100%{opacity:.55;transform:scale(.9)}
-  50%{opacity:1;transform:scale(1.15)}
+  0%,100%{opacity:.45;transform:scale(.8)}
+  50%{opacity:1;transform:scale(1.25)}
 }
 @media (prefers-reduced-motion: reduce){
   .logo-orb__image,.logo-orb__rays,.logo-orb__stars,.logo-orb__star{animation:none}
