@@ -1,6 +1,6 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#F7FAFD;
+  --bg:#f2f9ff;
   --bg-soft:#F8FBFD;
   --cta:#FF7A45;
   --cta-d:#E5612C;
@@ -52,7 +52,7 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .input-mic{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:var(--t2);transition:background .2s,color .2s;margin-top:-2px;position:relative}
 .input-mic:hover{background:rgba(15,27,45,.05)}
 
-.cta-btn{background:linear-gradient(135deg,#FFD974 0%,#F5B848 45%,#E89B2C 100%);color:#3B1F0A;text-align:center;padding:16px 18px;border-radius:18px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:-.1px;line-height:1.35;box-shadow:0 4px 11px rgba(232,155,44,.32),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(180,110,30,.18);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s,background .25s;position:relative;overflow:hidden;margin-bottom:14px}
+.cta-btn{background:linear-gradient(135deg,#FFD974 0%,#F5B848 45%,#E89B2C 100%);color:#3B1F0A;text-align:center;padding:16px 18px;border-radius:18px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:-.1px;line-height:1.35;border:none;outline:none;box-shadow:0 4px 11px rgba(232,155,44,.32),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(180,110,30,.18);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s,background .25s;position:relative;overflow:hidden;margin-bottom:14px}
 .cta-btn::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);animation:shim 4s infinite}
 .cta-btn:hover{transform:translateY(-2px) scale(1.015);box-shadow:0 7px 16px rgba(232,155,44,.42),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(180,110,30,.22);background:linear-gradient(135deg,#FFE095 0%,#F8C25E 45%,#EDA73B 100%)}
 .cta-btn:hover::after{animation:shim 1.5s infinite}
@@ -73,7 +73,7 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 /* Card has full image bg + text overlay at bottom */
 .step{
   background-size:cover;
-  background-position:center;
+  background-position:center top;
   background-repeat:no-repeat;
   border-radius:14px;
   overflow:hidden;
@@ -165,11 +165,21 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .vid-slide.active{position:relative;opacity:1;pointer-events:auto}
 
 .vid-circle-wrap{position:relative;width:240px;height:240px;display:flex;align-items:center;justify-content:center}
+
+/* progress ring */
+.vid-ring{position:absolute;top:0;left:0;width:240px;height:240px;z-index:3;pointer-events:none;transform:rotate(-90deg)}
+.vid-ring__bg{fill:none;stroke:rgba(0,0,0,.12);stroke-width:4}
+.vid-ring__prog{fill:none;stroke:#25D366;stroke-width:4;stroke-linecap:round;stroke-dasharray:729;stroke-dashoffset:729;transition:stroke-dashoffset .15s linear}
+
 .vid-circle-big{position:relative;z-index:1;width:230px;height:230px;border-radius:50%;background-size:cover;background-position:center;cursor:pointer;box-shadow:0 4px 14px rgba(15,27,45,.08);overflow:hidden;transition:transform .2s,box-shadow .2s}
-.vid-circle-big::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.32) 100%)}
+.vid-circle-big::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.32) 100%);z-index:2}
 .vid-circle-big:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(15,27,45,.12)}
-.vid-play-big{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.3);backdrop-filter:blur(12px);border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:2;padding-left:4px;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.vid-dur-big{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;z-index:2;letter-spacing:.3px}
+
+/* actual video element fills the circle */
+.vid-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:block}
+
+.vid-play-big{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.3);backdrop-filter:blur(12px);border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:3;padding-left:4px;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s}
+.vid-dur-big{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;z-index:3;letter-spacing:.3px}
 
 .bullets{margin-top:0;display:flex;flex-direction:column;align-items:center;gap:18px}
 .bullets-inner{display:flex;flex-direction:column;gap:18px}
@@ -346,7 +356,13 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .chat-typing span:nth-child(3){animation-delay:.4s}
 @keyframes chat-dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 
-.chat-input-box{margin-bottom:0;align-items:flex-end}
+.chat-input-box{
+  margin-bottom:0;align-items:flex-end;
+  position:sticky;bottom:0;z-index:10;
+  background:var(--bg);
+  margin-left:-20px;margin-right:-20px;
+  padding:8px 20px 14px;
+}
 .chat-send-btn{
   width:36px;height:36px;border-radius:50%;flex-shrink:0;
   border:none;cursor:pointer;

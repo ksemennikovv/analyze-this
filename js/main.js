@@ -14,7 +14,84 @@ function initCarousel(slidesId, prevId, nextId){
   document.getElementById(nextId).addEventListener('click', () => go(idx + 1));
 }
 initCarousel('rvSlides','rvPrev','rvNext');
-initCarousel('vidSlides','vidPrev','vidNext');
+
+/* ---- video carousel — pauses video on slide change ---- */
+(function(){
+  var container = document.getElementById('vidSlides');
+  if(!container) return;
+  var slides = Array.from(container.children);
+  var total  = slides.length;
+  var idx    = 0;
+  slides[0].classList.add('active');
+
+  function go(newIdx){
+    var outVideo = slides[idx].querySelector('.vid-video');
+    if(outVideo){ outVideo.pause(); outVideo.currentTime = 0; }
+    slides[idx].classList.remove('active');
+    idx = (newIdx + total) % total;
+    slides[idx].classList.add('active');
+  }
+
+  var prev = document.getElementById('vidPrev');
+  var next = document.getElementById('vidNext');
+  if(prev) prev.addEventListener('click', function(){ go(idx - 1); });
+  if(next) next.addEventListener('click', function(){ go(idx + 1); });
+})();
+
+/* ---- video circle player with ring progress ---- */
+(function(){
+  var CIRCUM = 2 * Math.PI * 116; /* r=116 → 729 */
+
+  document.querySelectorAll('.vid-circle-wrap').forEach(function(wrap){
+    var circle  = wrap.querySelector('.vid-circle-big');
+    var video   = wrap.querySelector('.vid-video');
+    var playBtn = wrap.querySelector('.vid-play-big');
+    var durEl   = wrap.querySelector('.vid-dur-big');
+    var prog    = wrap.querySelector('.vid-ring__prog');
+
+    if(!video) return;
+
+    prog.style.strokeDasharray  = CIRCUM;
+    prog.style.strokeDashoffset = CIRCUM;
+
+    function fmt(sec){
+      var m = Math.floor(sec / 60);
+      var s = Math.floor(sec % 60);
+      return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    circle.addEventListener('click', function(){
+      if(video.paused) video.play(); else video.pause();
+    });
+
+    video.addEventListener('play', function(){
+      playBtn.style.opacity = '0';
+      playBtn.style.pointerEvents = 'none';
+    });
+
+    video.addEventListener('pause', function(){
+      playBtn.style.opacity = '1';
+      playBtn.style.pointerEvents = '';
+    });
+
+    video.addEventListener('ended', function(){
+      video.currentTime = 0;
+      prog.style.strokeDashoffset = CIRCUM;
+      video.play();
+    });
+
+    video.addEventListener('timeupdate', function(){
+      if(!video.duration) return;
+      var pct    = video.currentTime / video.duration;
+      prog.style.strokeDashoffset = CIRCUM * (1 - pct);
+      durEl.textContent = fmt(video.duration - video.currentTime);
+    });
+
+    video.addEventListener('loadedmetadata', function(){
+      durEl.textContent = fmt(video.duration);
+    });
+  });
+})();
 
 (function(){
   const el = document.getElementById('socialCount');
@@ -108,6 +185,8 @@ initCarousel('vidSlides','vidPrev','vidNext');
   micBtn.addEventListener('click', function(){
     if(recording){ stopRec(); } else { startRec(); }
   });
+
+  window.__stopHeroMic = stopRec;
 })();
 
 (function(){
@@ -125,8 +204,10 @@ initCarousel('vidSlides','vidPrev','vidNext');
   var busy            = false;
   var SESSION_TRIGGER = 6; /* history entries (user+assistant) before forced trigger */
 
-  /* ---------- CTA click ---------- */
-  ctaBtn.addEventListener('click', function(){
+  /* ---------- CTA + hero send button ---------- */
+  var heroSend = document.getElementById('heroSend');
+  function doHeroSubmit(){
+    if(window.__stopHeroMic) window.__stopHeroMic();
     var text = userArea ? userArea.value.trim() : '';
     if(!text){ if(userArea) userArea.focus(); return; }
 
@@ -135,6 +216,11 @@ initCarousel('vidSlides','vidPrev','vidNext');
 
     if(userArea) userArea.value = '';
     dispatch(text);
+  }
+  ctaBtn.addEventListener('click', doHeroSubmit);
+  if(heroSend) heroSend.addEventListener('click', doHeroSubmit);
+  if(userArea) userArea.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); doHeroSubmit(); }
   });
 
   /* ---------- send on button / Enter ---------- */
@@ -204,6 +290,9 @@ initCarousel('vidSlides','vidPrev','vidNext');
             busy = false;
             sendBtn.disabled = false;
 
+            botBubble.scrollIntoView({behavior:'smooth', block:'nearest'});
+            if(chatInput && chatInputBox && chatInputBox.style.display !== 'none') chatInput.focus();
+
             /* only trigger reg flow for anonymous users */
             if(!window.__isLoggedIn && (ended || history.length >= SESSION_TRIGGER)){
               if(chatInputBox) chatInputBox.style.display = 'none';
@@ -229,7 +318,7 @@ initCarousel('vidSlides','vidPrev','vidNext');
                 full += ev.delta.text;
                 botBubble.className = 'chat-bubble';
                 botBubble.textContent = full.replace('[END_SESSION]', '').trim();
-                botBubble.parentNode.scrollIntoView({behavior:'smooth', block:'end'});
+                botBubble.scrollIntoView({behavior:'smooth', block:'nearest'});
               }
             }catch(e){}
           });
@@ -264,7 +353,7 @@ initCarousel('vidSlides','vidPrev','vidNext');
 
     wrap.appendChild(bubble);
     msgsList.appendChild(wrap);
-    wrap.scrollIntoView({behavior:'smooth', block:'end'});
+    wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
     return bubble;
   }
 })();
@@ -390,6 +479,8 @@ initCarousel('vidSlides','vidPrev','vidNext');
   /* ---------- called when chat ends (from chat IIFE) ---------- */
   window.__onChatEnd = function(history){
     window.__pendingHistory = history;
+    var wolfSection = document.getElementById('wolfSection');
+    if(wolfSection) wolfSection.style.display = 'block';
     if(regSection){
       regSection.style.display = 'block';
       setTimeout(function(){ regSection.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
@@ -413,7 +504,9 @@ initCarousel('vidSlides','vidPrev','vidNext');
   function submitReg(){
     if(regError) regError.textContent = '';
     var email = regEmail ? regEmail.value.trim() : '';
+    var pass  = document.getElementById('regPass') ? document.getElementById('regPass').value : '';
     if(!email){ if(regError) regError.textContent = 'Введите email'; return; }
+    if(pass.length < 6){ if(regError) regError.textContent = 'Пароль должен быть не менее 6 символов'; return; }
     if(!regCheck1 || !regCheck1.checked){ if(regError) regError.textContent = 'Подтвердите условия использования'; return; }
     if(!regCheck2 || !regCheck2.checked){ if(regError) regError.textContent = 'Подтвердите согласие на обработку данных'; return; }
 
@@ -424,9 +517,10 @@ initCarousel('vidSlides','vidPrev','vidNext');
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        email:   email,
-        name:    extractName(window.__pendingHistory || []),
-        history: window.__pendingHistory || []
+        email:    email,
+        password: pass,
+        name:     extractName(window.__pendingHistory || []),
+        history:  window.__pendingHistory || []
       })
     })
     .then(function(r){ return r.json(); })
@@ -495,6 +589,8 @@ initCarousel('vidSlides','vidPrev','vidNext');
   /* ---------- show video section ---------- */
   function showVideo(name, videoUrl){
     if(!videoSection) return;
+    var wolfSection = document.getElementById('wolfSection');
+    if(wolfSection) wolfSection.style.display = 'block';
     videoSection.style.display = 'block';
     setTimeout(function(){ videoSection.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
 
@@ -522,40 +618,54 @@ initCarousel('vidSlides','vidPrev','vidNext');
 
 /* ============ SIDE MENU ============ */
 (function(){
-  var toggle      = document.getElementById('menuToggle');
-  var menu        = document.getElementById('sideMenu');
-  var overlay     = document.getElementById('sideMenuOverlay');
-  var closeBtn    = document.getElementById('sideMenuClose');
-  var nameEl      = document.getElementById('menuUserName');
-  var logoutBtn   = document.getElementById('menuLogoutBtn');
-  var loginArea   = document.getElementById('menuLoginArea');
-  var authedArea  = document.getElementById('menuAuthedArea');
-  var emailEl     = document.getElementById('menuEmail');
-  var passEl      = document.getElementById('menuPass');
-  var loginBtn    = document.getElementById('menuLoginBtn');
-  var loginErrEl  = document.getElementById('menuLoginError');
+  var toggle         = document.getElementById('menuToggle');
+  var menu           = document.getElementById('sideMenu');
+  var overlay        = document.getElementById('sideMenuOverlay');
+  var closeBtn       = document.getElementById('sideMenuClose');
+  var nameEl         = document.getElementById('menuUserName');
+  var logoutBtn      = document.getElementById('menuLogoutBtn');
+  var loginArea      = document.getElementById('menuLoginArea');
+  var authedArea     = document.getElementById('menuAuthedArea');
+  var loginErrEl     = document.getElementById('menuLoginError');
+  var stepLogin      = document.getElementById('menuStepLogin');
+  var stepForgot     = document.getElementById('menuStepForgot');
+  var stepReset      = document.getElementById('menuStepReset');
+  var emailEl        = document.getElementById('menuEmail');
+  var passEl         = document.getElementById('menuPass');
+  var loginBtn       = document.getElementById('menuLoginBtn');
+  var forgotLink     = document.getElementById('menuForgotLink');
+  var forgotEmailEl  = document.getElementById('menuForgotEmail');
+  var forgotSendBtn  = document.getElementById('menuForgotSendBtn');
+  var backToLoginEl  = document.getElementById('menuBackToLogin');
+  var resetCodeEl    = document.getElementById('menuResetCode');
+  var resetPassEl    = document.getElementById('menuResetPass');
+  var resetBtn       = document.getElementById('menuResetBtn');
 
-  function openMenu(){ menu.classList.add('open'); overlay.classList.add('open'); }
-  function closeMenu(){ menu.classList.remove('open'); overlay.classList.remove('open'); }
+  var menuForgotEmail = '';
+
+  function openMenu(){ menu.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeMenu(){ menu.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
+  function showStep(step){
+    [stepLogin, stepForgot, stepReset].forEach(function(s){ if(s) s.style.display = 'none'; });
+    if(step) step.style.display = 'block';
+    if(loginErrEl) loginErrEl.textContent = '';
+  }
 
   if(toggle)   toggle.addEventListener('click', openMenu);
   if(closeBtn) closeBtn.addEventListener('click', closeMenu);
   if(overlay)  overlay.addEventListener('click', closeMenu);
+  if(forgotLink)    forgotLink.addEventListener('click', function(){ showStep(stepForgot); if(forgotEmailEl) forgotEmailEl.focus(); });
+  if(backToLoginEl) backToLoginEl.addEventListener('click', function(){ showStep(stepLogin); });
 
-  /* ---------- login form ---------- */
+  /* ---------- login: email + password ---------- */
   function doLogin(){
     if(loginErrEl) loginErrEl.textContent = '';
     var email = emailEl ? emailEl.value.trim() : '';
     var pass  = passEl  ? passEl.value         : '';
     if(!email || !pass){ if(loginErrEl) loginErrEl.textContent = 'Введите email и пароль'; return; }
-
     if(loginBtn){ loginBtn.disabled = true; loginBtn.textContent = 'Входим…'; }
-
     var fd = new FormData();
-    fd.append('action',   'login');
-    fd.append('email',    email);
-    fd.append('password', pass);
-
+    fd.append('action', 'login'); fd.append('email', email); fd.append('password', pass);
     fetch('php/auth.php', {method:'POST', body:fd})
       .then(function(r){ return r.json(); })
       .then(function(d){
@@ -566,18 +676,12 @@ initCarousel('vidSlides','vidPrev','vidNext');
         window.__setMenuUser(d.name || '', email);
         var heroSection = document.getElementById('heroSection');
         if(heroSection) heroSection.style.display = 'none';
-        /* load history then video */
         var fd2 = new FormData(); fd2.append('action','check');
-        fetch('php/auth.php',{method:'POST',body:fd2})
-          .then(function(r){ return r.json(); })
-          .then(function(d2){
-            if(!d2.ok || !window.__showVideo) return;
-            if(window.__loadHistory){
-              window.__loadHistory(function(){ window.__showVideo(d2.name, d2.video); });
-            } else {
-              window.__showVideo(d2.name, d2.video);
-            }
-          });
+        fetch('php/auth.php',{method:'POST',body:fd2}).then(function(r){ return r.json(); }).then(function(d2){
+          if(!d2.ok) return;
+          if(window.__loadHistory) window.__loadHistory(function(){ if(window.__showVideo) window.__showVideo(d2.name, d2.video); });
+          else if(window.__showVideo) window.__showVideo(d2.name, d2.video);
+        });
       })
       .catch(function(){
         if(loginBtn){ loginBtn.disabled = false; loginBtn.textContent = 'Войти'; }
@@ -585,10 +689,68 @@ initCarousel('vidSlides','vidPrev','vidNext');
       });
   }
 
-  if(loginBtn) loginBtn.addEventListener('click', doLogin);
-  [emailEl, passEl].forEach(function(el){
-    if(el) el.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
-  });
+  /* ---------- forgot: send code ---------- */
+  function doForgotSend(){
+    if(loginErrEl) loginErrEl.textContent = '';
+    var email = forgotEmailEl ? forgotEmailEl.value.trim() : '';
+    if(!email){ if(loginErrEl) loginErrEl.textContent = 'Введите email'; return; }
+    if(forgotSendBtn){ forgotSendBtn.disabled = true; forgotSendBtn.textContent = 'Отправляем…'; }
+    menuForgotEmail = email;
+    var fd = new FormData(); fd.append('action','forgot'); fd.append('email', email);
+    fetch('php/auth.php',{method:'POST',body:fd})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(forgotSendBtn){ forgotSendBtn.disabled = false; forgotSendBtn.textContent = 'Отправить код'; }
+        if(!d.ok){ if(loginErrEl) loginErrEl.textContent = d.error || 'Ошибка'; return; }
+        showStep(stepReset);
+        if(resetCodeEl) resetCodeEl.focus();
+      })
+      .catch(function(){
+        if(forgotSendBtn){ forgotSendBtn.disabled = false; forgotSendBtn.textContent = 'Отправить код'; }
+        if(loginErrEl) loginErrEl.textContent = 'Ошибка соединения';
+      });
+  }
+
+  /* ---------- forgot: verify code + new password ---------- */
+  function doReset(){
+    if(loginErrEl) loginErrEl.textContent = '';
+    var code = resetCodeEl ? resetCodeEl.value.trim() : '';
+    var pass = resetPassEl ? resetPassEl.value        : '';
+    if(code.length !== 6){ if(loginErrEl) loginErrEl.textContent = 'Введите 6-значный код'; return; }
+    if(pass.length < 6){   if(loginErrEl) loginErrEl.textContent = 'Пароль не менее 6 символов'; return; }
+    if(resetBtn){ resetBtn.disabled = true; resetBtn.textContent = 'Сохраняем…'; }
+    var fd = new FormData();
+    fd.append('action','reset'); fd.append('email', menuForgotEmail);
+    fd.append('code', code); fd.append('password', pass);
+    fetch('php/auth.php',{method:'POST',body:fd})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(resetBtn){ resetBtn.disabled = false; resetBtn.textContent = 'Сохранить пароль'; }
+        if(!d.ok){ if(loginErrEl) loginErrEl.textContent = d.error || 'Ошибка'; return; }
+        if(resetCodeEl) resetCodeEl.value = '';
+        if(resetPassEl) resetPassEl.value = '';
+        showStep(stepLogin);
+        closeMenu();
+        window.__setMenuUser(d.name || '', menuForgotEmail);
+        var heroSection = document.getElementById('heroSection');
+        if(heroSection) heroSection.style.display = 'none';
+        if(window.__loadHistory) window.__loadHistory(function(){ if(window.__showVideo) window.__showVideo(d.name, d.video); });
+        else if(window.__showVideo) window.__showVideo(d.name, d.video);
+      })
+      .catch(function(){
+        if(resetBtn){ resetBtn.disabled = false; resetBtn.textContent = 'Сохранить пароль'; }
+        if(loginErrEl) loginErrEl.textContent = 'Ошибка соединения';
+      });
+  }
+
+  if(loginBtn)      loginBtn.addEventListener('click', doLogin);
+  if(forgotSendBtn) forgotSendBtn.addEventListener('click', doForgotSend);
+  if(resetBtn)      resetBtn.addEventListener('click', doReset);
+  if(emailEl)       emailEl.addEventListener('keydown',       function(e){ if(e.key==='Enter') doLogin(); });
+  if(passEl)        passEl.addEventListener('keydown',        function(e){ if(e.key==='Enter') doLogin(); });
+  if(forgotEmailEl) forgotEmailEl.addEventListener('keydown', function(e){ if(e.key==='Enter') doForgotSend(); });
+  if(resetCodeEl)   resetCodeEl.addEventListener('keydown',   function(e){ if(e.key==='Enter') doReset(); });
+  if(resetPassEl)   resetPassEl.addEventListener('keydown',   function(e){ if(e.key==='Enter') doReset(); });
 
   /* ---------- set user (called after login/verify/session check) ---------- */
   window.__setMenuUser = function(name, email){
@@ -619,13 +781,19 @@ initCarousel('vidSlides','vidPrev','vidNext');
         var videoSection  = document.getElementById('videoSection');
         var msgs          = document.getElementById('chatMessages');
         var chatInputBox  = document.getElementById('chatInputBox');
+        var wolfSection = document.getElementById('wolfSection');
         if(heroSection)   heroSection.style.display = 'block';
         if(chatSection)   chatSection.style.display = 'none';
+        if(wolfSection)   wolfSection.style.display  = 'none';
         if(regSection)    regSection.style.display  = 'none';
         if(verifySection) verifySection.style.display = 'none';
         if(videoSection)  videoSection.style.display = 'none';
         if(msgs)          msgs.innerHTML = '';
         if(chatInputBox)  chatInputBox.style.display = '';
+        showStep(stepLogin);
+        if(emailEl)    emailEl.value = '';
+        if(passEl)     passEl.value  = '';
+        menuForgotEmail = '';
         window.__isLoggedIn     = false;
         window.__chatHistory    = [];
         window.__pendingHistory = null;
