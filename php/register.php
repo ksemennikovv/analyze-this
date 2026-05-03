@@ -5,25 +5,25 @@ session_start();
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 
-$input    = json_decode(file_get_contents('php://input'), true);
-$email    = trim($input['email']    ?? '');
-$name     = trim($input['name']     ?? '');
-$password = trim($input['password'] ?? '');
-$history  = $input['history'] ?? [];
+$input   = json_decode(file_get_contents('php://input'), true);
+$email   = trim($input['email']   ?? '');
+$name    = trim($input['name']    ?? '');
+$history = $input['history'] ?? [];
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['ok' => false, 'error' => 'Некорректный email']);
     exit;
 }
-if (strlen($password) < 6) {
-    echo json_encode(['ok' => false, 'error' => 'Пароль должен быть не менее 6 символов']);
-    exit;
-}
 
 $db      = db();
 $code    = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-$expires = date('Y-m-d H:i:s', time() + 600);
-$hash    = password_hash($password, PASSWORD_BCRYPT);
+$expires = date('Y-m-d H:i:s', time() + 86400); /* 24 hours */
+
+/* generate secure password */
+$chars    = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+$plainPwd = '';
+for ($i = 0; $i < 10; $i++) $plainPwd .= $chars[random_int(0, strlen($chars) - 1)];
+$hash = password_hash($plainPwd, PASSWORD_BCRYPT);
 
 $stmt = $db->prepare('SELECT id, name, email_verified FROM users WHERE email = ?');
 $stmt->bind_param('s', $email);
@@ -38,7 +38,6 @@ if ($row) {
         ]);
         exit;
     }
-    /* not yet verified — allow resend with new password */
     $stmt = $db->prepare('UPDATE users SET password = ?, verify_code = ?, verify_expires = ? WHERE id = ?');
     $stmt->bind_param('sssi', $hash, $code, $expires, $row['id']);
     $stmt->execute();
@@ -54,15 +53,32 @@ if ($row) {
     $userName = $name;
 }
 
+/* save chat history directly to DB */
 if (!empty($history)) {
-    $_SESSION['pending_history'] = $history;
-    $_SESSION['pending_uid']     = $userId;
+    $ins = $db->prepare('INSERT IGNORE INTO chat_messages (user_id, role, content) VALUES (?, ?, ?)');
+    foreach ($history as $m) {
+        if (isset($m['role'], $m['content']) && in_array($m['role'], ['user', 'assistant'], true)) {
+            $ins->bind_param('iss', $userId, $m['role'], $m['content']);
+            $ins->execute();
+        }
+    }
 }
-$_SESSION['pending_email'] = $email;
 
-$subject = 'Ваш код подтверждения — NirvaBody';
-$body    = "Код подтверждения: $code\n\nДействителен 10 минут.\n\nЕсли вы не запрашивали код — проигнорируйте это письмо.";
-$headers = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
-mail($email, $subject, $body, $headers);
+$siteUrl    = 'https://analyze.inter-removals.com';
+$confirmUrl = $siteUrl . '/confirm.php?code=' . $code . '&email=' . urlencode($email);
+
+/* Email 1 — confirmation link */
+$subject1 = 'Подтвердите регистрацию — NirvaBody';
+$body1    = "Здравствуйте!\n\nДля подтверждения регистрации перейдите по ссылке:\n$confirmUrl\n\nСсылка действительна 24 часа.\n\nЕсли вы не регистрировались — проигнорируйте это письмо.";
+$headers1 = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
+mail($email, $subject1, $body1, $headers1);
+
+/* Email 2 — credentials */
+$subject2 = 'Ваши данные для входа — NirvaBody';
+$body2    = "Здравствуйте!\n\nВаши данные для входа:\nЛогин: $email\nПароль: $plainPwd\n\nВойти можно через меню на сайте:\n$siteUrl\n\nРекомендуем сохранить эти данные.";
+$headers2 = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
+mail($email, $subject2, $body2, $headers2);
+
+$_SESSION['pending_email'] = $email;
 
 echo json_encode(['ok' => true]);

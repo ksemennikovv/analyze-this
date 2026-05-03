@@ -211,6 +211,9 @@ initCarousel('rvSlides','rvPrev','rvNext');
     if(window.__stopHeroMic) window.__stopHeroMic();
     if(!text){ if(userArea) userArea.focus(); return; }
 
+    var hero = document.getElementById('heroSection');
+    if(hero) hero.style.display = 'none';
+
     chatSect.style.display = 'block';
     setTimeout(function(){ chatSect.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
 
@@ -414,6 +417,20 @@ initCarousel('rvSlides','rvPrev','rvNext');
   });
 })();
 
+/* ============ WELCOME BANNER ============ */
+(function(){
+  if(new URLSearchParams(window.location.search).get('welcome') === '1'){
+    var banner = document.getElementById('welcomeBanner');
+    if(banner) banner.style.display = 'block';
+    history.replaceState({}, '', '/');
+  }
+  var closeBtn = document.getElementById('welcomeClose');
+  if(closeBtn) closeBtn.addEventListener('click', function(){
+    var banner = document.getElementById('welcomeBanner');
+    if(banner) banner.style.display = 'none';
+  });
+})();
+
 /* ============ AUTH FLOW ============ */
 (function(){
   var heroSection   = document.getElementById('heroSection');
@@ -504,9 +521,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
   function submitReg(){
     if(regError) regError.textContent = '';
     var email = regEmail ? regEmail.value.trim() : '';
-    var pass  = document.getElementById('regPass') ? document.getElementById('regPass').value : '';
     if(!email){ if(regError) regError.textContent = 'Введите email'; return; }
-    if(pass.length < 6){ if(regError) regError.textContent = 'Пароль должен быть не менее 6 символов'; return; }
     if(!regCheck1 || !regCheck1.checked){ if(regError) regError.textContent = 'Подтвердите условия использования'; return; }
     if(!regCheck2 || !regCheck2.checked){ if(regError) regError.textContent = 'Подтвердите согласие на обработку данных'; return; }
 
@@ -517,10 +532,9 @@ initCarousel('rvSlides','rvPrev','rvNext');
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        email:    email,
-        password: pass,
-        name:     extractName(window.__pendingHistory || []),
-        history:  window.__pendingHistory || []
+        email:   email,
+        name:    extractName(window.__pendingHistory || []),
+        history: window.__pendingHistory || []
       })
     })
     .then(function(r){ return r.json(); })
