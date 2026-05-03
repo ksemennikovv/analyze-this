@@ -173,20 +173,20 @@ initCarousel('rvSlides','rvPrev','rvNext');
     recognition.start();
   }
 
-  function stopRec(){
+  function stopRec(keepText){
     recording = false;
     micBtn.classList.remove('input-mic--recording');
     recognition.onend = null;
     try{ recognition.stop(); }catch(e){}
     recognition.onend = function(){ if(recording) recognition.start(); };
-    textarea.value = baseText;
+    if(!keepText) textarea.value = baseText;
   }
 
   micBtn.addEventListener('click', function(){
     if(recording){ stopRec(); } else { startRec(); }
   });
 
-  window.__stopHeroMic = stopRec;
+  window.__stopHeroMic = function(){ stopRec(true); };
 })();
 
 (function(){
@@ -207,8 +207,8 @@ initCarousel('rvSlides','rvPrev','rvNext');
   /* ---------- CTA + hero send button ---------- */
   var heroSend = document.getElementById('heroSend');
   function doHeroSubmit(){
-    if(window.__stopHeroMic) window.__stopHeroMic();
     var text = userArea ? userArea.value.trim() : '';
+    if(window.__stopHeroMic) window.__stopHeroMic();
     if(!text){ if(userArea) userArea.focus(); return; }
 
     chatSect.style.display = 'block';
