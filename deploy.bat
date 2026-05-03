@@ -8,13 +8,12 @@ set ARCHIVE=%ARCHIVE: =0%
 if /i "%1"=="full" (
   echo [FULL] Creating %ARCHIVE%...
   %ZIP% a -tzip %ARCHIVE% ^
-    cgi-bin ^
     css ^
     js ^
     php ^
     images ^
+    videos ^
     robots.txt ^
-    prompt.txt ^
     *.html ^
     -xr!*.bat ^
     -xr!*.zip ^
@@ -31,11 +30,9 @@ if /i "%1"=="full" (
 ) else (
   echo [DEFAULT] Creating %ARCHIVE%...
   %ZIP% a -tzip %ARCHIVE% ^
-    cgi-bin ^
     css ^
     js ^
     php ^
-    prompt.txt ^
     robots.txt ^
     *.html ^
     -xr!*.bat ^
