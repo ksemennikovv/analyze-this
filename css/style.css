@@ -52,6 +52,13 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .input-mic{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:var(--t2);transition:background .2s,color .2s;margin-top:-2px;position:relative}
 .input-mic:hover{background:rgba(15,27,45,.05)}
 
+/* ---- Hero input: text wraps around bottom-right buttons ---- */
+.hero-input-box{position:relative;display:block}
+.hero-input-box .input-textarea{display:block;width:100%;outline:none;word-break:break-word;white-space:pre-wrap;cursor:text;flex:unset}
+.input-float-spacer{float:right;width:82px;height:90px;shape-outside:inset(46px 0 0 0);pointer-events:none}
+.input-btns-abs{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:row;gap:8px;align-items:center;z-index:1}
+.input-textarea[contenteditable].is-empty::before{content:attr(data-placeholder);color:var(--t4);font-size:15px;pointer-events:none;display:block}
+
 .cta-btn{background:linear-gradient(135deg,#FFD974 0%,#F5B848 45%,#E89B2C 100%);color:#3B1F0A;text-align:center;padding:16px 18px;border-radius:18px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:-.1px;line-height:1.35;border:none;outline:none;box-shadow:0 4px 11px rgba(232,155,44,.32),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(180,110,30,.18);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s,background .25s;position:relative;overflow:hidden;margin-bottom:14px}
 .cta-btn::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);animation:shim 4s infinite}
 .cta-btn:hover{transform:translateY(-2px) scale(1.015);box-shadow:0 7px 16px rgba(232,155,44,.42),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(180,110,30,.22);background:linear-gradient(135deg,#FFE095 0%,#F8C25E 45%,#EDA73B 100%)}
@@ -598,6 +605,7 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .video-placeholder__text{font-size:14px;color:var(--t3);font-weight:500}
 
 /* ============ MENU LOGIN FORM ============ */
-.side-menu__login{display:flex;flex-direction:column;gap:12px;padding:8px 0}
-.side-menu__login-title{font-size:15px;font-weight:700;color:var(--t1);text-align:center}
+.side-menu__login{display:flex;flex-direction:column;gap:6px;padding:4px 0}
+.side-menu__login-title{font-size:15px;font-weight:700;color:var(--t1);text-align:center;margin-bottom:6px}
+#menuStepLogin,#menuStepForgot,#menuStepReset{display:flex;flex-direction:column;gap:10px}
 .menu-login-btn{margin-bottom:0}

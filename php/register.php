@@ -31,7 +31,7 @@ $stmt->execute();
 $row = $stmt->get_result()->fetch_assoc();
 
 if ($row) {
-    if ((int)$row['email_verified'] === 1) {
+    if (!empty($row['email_verified'])) {
         echo json_encode([
             'ok'    => false,
             'error' => 'Этот email уже зарегистрирован. Войдите через меню или нажмите «Забыл пароль».',
