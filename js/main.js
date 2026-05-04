@@ -245,8 +245,8 @@ initCarousel('rvSlides','rvPrev','rvNext');
     if(window.__stopHeroMic) window.__stopHeroMic();
     if(!text){ if(userArea) userArea.focus(); return; }
 
-    var hero = document.getElementById('heroSection');
-    if(hero) hero.style.display = 'none';
+    var heroForm = document.getElementById('heroForm');
+    if(heroForm) heroForm.style.display = 'none';
 
     chatSect.style.display = 'block';
     setTimeout(function(){ scrollBottom(true); }, 60);
@@ -536,7 +536,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
     .then(function(r){ return r.json(); })
     .then(function(d){
       if(d.ok){
-        if(heroSection) heroSection.style.display = 'none';
+        var _hf = document.getElementById('heroForm'); if(_hf) _hf.style.display = 'none';
         if(window.__setMenuUser) window.__setMenuUser(d.name, '');
         loadHistory(function(){ showVideo(d.name, d.video); });
       }
