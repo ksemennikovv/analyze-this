@@ -190,6 +190,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
     interim = '';
     recording = true;
     micBtn.classList.add('input-mic--recording');
+    textarea.blur(); /* hide Android keyboard to prevent IME double-input */
     recognition.start();
   }
 
@@ -443,6 +444,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
     interim  = '';
     recording = true;
     micBtn.classList.add('input-mic--recording');
+    input.blur(); /* hide Android keyboard to prevent IME double-input */
     recognition.start();
   }
 
