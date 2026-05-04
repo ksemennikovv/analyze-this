@@ -65,7 +65,7 @@ if (!empty($history)) {
 }
 
 $siteUrl    = 'https://analyze.inter-removals.com';
-$confirmUrl = $siteUrl . '/confirm.php?code=' . $code . '&email=' . urlencode($email);
+$confirmUrl = $siteUrl . '/php/confirm.php?code=' . $code . '&email=' . urlencode($email);
 
 /* Email 1 — confirmation link */
 $subject1 = 'Подтвердите регистрацию — NirvaBody';
