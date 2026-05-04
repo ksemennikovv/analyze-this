@@ -67,11 +67,17 @@ if (!empty($history)) {
 $siteUrl    = 'https://analyze.inter-removals.com';
 $confirmUrl = $siteUrl . '/php/confirm.php?code=' . $code . '&email=' . urlencode($email);
 
-/* Single email — confirmation link + credentials */
-$subject = 'Добро пожаловать в NirvaBody — подтвердите регистрацию';
-$body    = "Здравствуйте, $userName!\n\nШаг 1 — подтвердите email, перейдя по ссылке:\n$confirmUrl\n\nСсылка действительна 24 часа.\n\n---\nШаг 2 — после подтверждения войдите в личный кабинет:\nСайт:   $siteUrl\nЛогин:  $email\nКод:    $plainPwd\n\nРекомендуем сохранить эти данные.\n\nЕсли вы не регистрировались — проигнорируйте это письмо.";
-$headers = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
-mail($email, $subject, $body, $headers);
+/* Email 1 — confirmation link */
+$subject1 = 'Подтвердите регистрацию — NirvaBody';
+$body1    = "Здравствуйте!\n\nДля подтверждения регистрации перейдите по ссылке:\n$confirmUrl\n\nСсылка действительна 24 часа.\n\nЕсли вы не регистрировались — проигнорируйте это письмо.";
+$headers1 = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
+mail($email, $subject1, $body1, $headers1);
+
+/* Email 2 — credentials */
+$subject2 = 'Ваши данные для входа — NirvaBody';
+$body2    = "Здравствуйте!\n\nВаши данные для входа:\nЛогин: $email\nКод доступа: $plainPwd\n\nВойти можно через меню на сайте:\n$siteUrl\n\nРекомендуем сохранить эти данные.";
+$headers2 = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
+mail($email, $subject2, $body2, $headers2);
 
 $_SESSION['pending_email'] = $email;
 
