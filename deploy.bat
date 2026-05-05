@@ -13,6 +13,7 @@ if /i "%1"=="full" (
     php ^
     images ^
     videos ^
+    prompt.txt ^
     robots.txt ^
     *.html ^
     -xr!*.bat ^
@@ -33,6 +34,7 @@ if /i "%1"=="full" (
     css ^
     js ^
     php ^
+    prompt.txt ^
     robots.txt ^
     *.html ^
     -xr!*.bat ^

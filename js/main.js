@@ -124,10 +124,32 @@ initCarousel('rvSlides','rvPrev','rvNext');
 
 (function(){
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var micBtn = document.getElementById('micBtn');
+  var micBtn  = document.getElementById('micBtn');
   var textarea = document.getElementById('userText');
+  var _spacer  = document.getElementById('heroInputSpacer');
 
   if(!SpeechRecognition || !micBtn){ if(micBtn) micBtn.style.display='none'; return; }
+
+  /* contenteditable helpers */
+  function _getVal(){
+    if(!_spacer) return textarea.value;
+    return (textarea.innerText || '').trim();
+  }
+  function _setVal(v){
+    if(!_spacer){ textarea.value = v; return; }
+    Array.from(textarea.childNodes).forEach(function(n){ if(n !== _spacer) textarea.removeChild(n); });
+    if(v) textarea.appendChild(document.createTextNode(v));
+    textarea.classList.toggle('is-empty', !(v || '').trim());
+  }
+  function _updatePlaceholder(){
+    if(_spacer) textarea.classList.toggle('is-empty', !_getVal());
+  }
+
+  /* init placeholder */
+  if(_spacer){
+    textarea.classList.add('is-empty');
+    textarea.addEventListener('input', _updatePlaceholder);
+  }
 
   var recognition = new SpeechRecognition();
   recognition.continuous = true;
@@ -148,10 +170,8 @@ initCarousel('rvSlides','rvPrev','rvNext');
         interim += e.results[i][0].transcript;
       }
     }
-    if(final){
-      baseText += final;
-    }
-    textarea.value = baseText + interim;
+    if(final){ baseText += final; }
+    _setVal(baseText + interim);
   };
 
   recognition.onerror = function(e){
@@ -166,27 +186,28 @@ initCarousel('rvSlides','rvPrev','rvNext');
   };
 
   function startRec(){
-    baseText = textarea.value;
+    baseText = _getVal();
     interim = '';
     recording = true;
     micBtn.classList.add('input-mic--recording');
+    textarea.blur(); /* hide Android keyboard to prevent IME double-input */
     recognition.start();
   }
 
-  function stopRec(){
+  function stopRec(keepText){
     recording = false;
     micBtn.classList.remove('input-mic--recording');
     recognition.onend = null;
     try{ recognition.stop(); }catch(e){}
     recognition.onend = function(){ if(recording) recognition.start(); };
-    textarea.value = baseText;
+    if(!keepText) _setVal(baseText);
   }
 
   micBtn.addEventListener('click', function(){
     if(recording){ stopRec(); } else { startRec(); }
   });
 
-  window.__stopHeroMic = stopRec;
+  window.__stopHeroMic = function(){ stopRec(true); };
 })();
 
 (function(){
@@ -204,17 +225,41 @@ initCarousel('rvSlides','rvPrev','rvNext');
   var busy            = false;
   var SESSION_TRIGGER = 6; /* history entries (user+assistant) before forced trigger */
 
+  /* always scroll to bottom — keeps input pinned like ChatGPT */
+  var _scrollTimer = null;
+  function scrollBottom(smooth){
+    clearTimeout(_scrollTimer);
+    _scrollTimer = setTimeout(function(){
+      var se = document.scrollingElement || document.documentElement;
+      if(smooth) se.scrollTo({top: se.scrollHeight, behavior:'smooth'});
+      else       se.scrollTop = se.scrollHeight;
+    }, smooth ? 0 : 50);
+  }
+
   /* ---------- CTA + hero send button ---------- */
   var heroSend = document.getElementById('heroSend');
   function doHeroSubmit(){
+    var text = userArea
+      ? (userArea.tagName === 'TEXTAREA' ? userArea.value.trim() : (userArea.innerText || '').trim())
+      : '';
     if(window.__stopHeroMic) window.__stopHeroMic();
-    var text = userArea ? userArea.value.trim() : '';
     if(!text){ if(userArea) userArea.focus(); return; }
 
-    chatSect.style.display = 'block';
-    setTimeout(function(){ chatSect.scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
+    var heroForm = document.getElementById('heroForm');
+    if(heroForm) heroForm.style.display = 'none';
 
-    if(userArea) userArea.value = '';
+    chatSect.style.display = 'block';
+    setTimeout(function(){ scrollBottom(true); }, 60);
+
+    if(userArea){
+      if(userArea.tagName === 'TEXTAREA'){
+        userArea.value = '';
+      } else {
+        var _sp = document.getElementById('heroInputSpacer');
+        Array.from(userArea.childNodes).forEach(function(n){ if(n !== _sp) userArea.removeChild(n); });
+        userArea.classList.add('is-empty');
+      }
+    }
     dispatch(text);
   }
   ctaBtn.addEventListener('click', doHeroSubmit);
@@ -232,6 +277,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
   function submit(){
     var t = chatInput.value.trim();
     if(!t || busy) return;
+    if(window.__stopChatMic) window.__stopChatMic();
     chatInput.value = '';
     dispatch(t);
   }
@@ -290,7 +336,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
             busy = false;
             sendBtn.disabled = false;
 
-            botBubble.scrollIntoView({behavior:'smooth', block:'nearest'});
+            scrollBottom(true);
             if(chatInput && chatInputBox && chatInputBox.style.display !== 'none') chatInput.focus();
 
             /* only trigger reg flow for anonymous users */
@@ -318,7 +364,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
                 full += ev.delta.text;
                 botBubble.className = 'chat-bubble';
                 botBubble.textContent = full.replace('[END_SESSION]', '').trim();
-                botBubble.scrollIntoView({behavior:'smooth', block:'nearest'});
+                scrollBottom(false);
               }
             }catch(e){}
           });
@@ -353,7 +399,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
 
     wrap.appendChild(bubble);
     msgsList.appendChild(wrap);
-    wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+    scrollBottom(true);
     return bubble;
   }
 })();
@@ -374,7 +420,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
   var baseText  = '';
   var interim   = '';
 
-  recognition.onresult = function(e){
+  function onResult(e){
     interim = '';
     var final = '';
     for(var i = e.resultIndex; i < e.results.length; i++){
@@ -383,7 +429,8 @@ initCarousel('rvSlides','rvPrev','rvNext');
     }
     if(final) baseText += final;
     input.value = baseText + interim;
-  };
+  }
+  recognition.onresult = onResult;
 
   recognition.onerror = function(e){
     if(e.error === 'not-allowed' || e.error === 'service-not-allowed') micBtn.style.display = 'none';
@@ -397,20 +444,39 @@ initCarousel('rvSlides','rvPrev','rvNext');
     interim  = '';
     recording = true;
     micBtn.classList.add('input-mic--recording');
+    input.blur(); /* hide Android keyboard to prevent IME double-input */
     recognition.start();
   }
 
-  function stopRec(){
+  function stopRec(keepText){
     recording = false;
     micBtn.classList.remove('input-mic--recording');
+    recognition.onresult = null; /* block late final results */
     recognition.onend = null;
     try{ recognition.stop(); }catch(e){}
+    recognition.onresult = onResult;
     recognition.onend = function(){ if(recording) recognition.start(); };
-    input.value = baseText;
+    if(!keepText) input.value = baseText;
   }
 
   micBtn.addEventListener('click', function(){
     if(recording) stopRec(); else startRec();
+  });
+
+  window.__stopChatMic = function(){ stopRec(true); };
+})();
+
+/* ============ WELCOME BANNER ============ */
+(function(){
+  if(new URLSearchParams(window.location.search).get('welcome') === '1'){
+    var banner = document.getElementById('welcomeBanner');
+    if(banner) banner.style.display = 'block';
+    history.replaceState({}, '', '/');
+  }
+  var closeBtn = document.getElementById('welcomeClose');
+  if(closeBtn) closeBtn.addEventListener('click', function(){
+    var banner = document.getElementById('welcomeBanner');
+    if(banner) banner.style.display = 'none';
   });
 })();
 
@@ -470,7 +536,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
     .then(function(r){ return r.json(); })
     .then(function(d){
       if(d.ok){
-        if(heroSection) heroSection.style.display = 'none';
+        var _hf = document.getElementById('heroForm'); if(_hf) _hf.style.display = 'none';
         if(window.__setMenuUser) window.__setMenuUser(d.name, '');
         loadHistory(function(){ showVideo(d.name, d.video); });
       }
@@ -504,9 +570,7 @@ initCarousel('rvSlides','rvPrev','rvNext');
   function submitReg(){
     if(regError) regError.textContent = '';
     var email = regEmail ? regEmail.value.trim() : '';
-    var pass  = document.getElementById('regPass') ? document.getElementById('regPass').value : '';
     if(!email){ if(regError) regError.textContent = 'Введите email'; return; }
-    if(pass.length < 6){ if(regError) regError.textContent = 'Пароль должен быть не менее 6 символов'; return; }
     if(!regCheck1 || !regCheck1.checked){ if(regError) regError.textContent = 'Подтвердите условия использования'; return; }
     if(!regCheck2 || !regCheck2.checked){ if(regError) regError.textContent = 'Подтвердите согласие на обработку данных'; return; }
 
@@ -517,10 +581,9 @@ initCarousel('rvSlides','rvPrev','rvNext');
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        email:    email,
-        password: pass,
-        name:     extractName(window.__pendingHistory || []),
-        history:  window.__pendingHistory || []
+        email:   email,
+        name:    extractName(window.__pendingHistory || []),
+        history: window.__pendingHistory || []
       })
     })
     .then(function(r){ return r.json(); })

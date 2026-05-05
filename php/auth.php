@@ -78,7 +78,7 @@ if ($action === 'login') {
     $db = db();
     if (!$db) { echo json_encode(['ok' => false, 'error' => 'Нет подключения к БД']); exit; }
 
-    $stmt = $db->prepare('SELECT id, password, name FROM users WHERE email = ?');
+    $stmt = $db->prepare('SELECT id, password, name, email_verified FROM users WHERE email = ?');
     if (!$stmt) { echo json_encode(['ok' => false, 'error' => 'Таблица users не найдена — запустите schema.sql']); exit; }
 
     $stmt->bind_param('s', $email);
@@ -87,6 +87,10 @@ if ($action === 'login') {
 
     if (!$row || !password_verify($pass, $row['password'])) {
         echo json_encode(['ok' => false, 'error' => 'Неверный email или пароль']);
+        exit;
+    }
+    if (empty($row['email_verified'])) {
+        echo json_encode(['ok' => false, 'error' => 'Сначала подтвердите email — проверьте письмо с ссылкой']);
         exit;
     }
 
@@ -105,12 +109,16 @@ if ($action === 'forgot') {
         exit;
     }
     $db   = db();
-    $stmt = $db->prepare('SELECT id FROM users WHERE email = ?');
+    $stmt = $db->prepare('SELECT id, email_verified FROM users WHERE email = ?');
     $stmt->bind_param('s', $email);
     $stmt->execute();
     $row  = $stmt->get_result()->fetch_assoc();
     if (!$row) {
         echo json_encode(['ok' => false, 'error' => 'Email не найден']);
+        exit;
+    }
+    if (empty($row['email_verified'])) {
+        echo json_encode(['ok' => false, 'error' => 'Аккаунт не подтверждён — используйте ссылку из письма о регистрации']);
         exit;
     }
     $code    = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);

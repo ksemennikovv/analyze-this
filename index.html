@@ -19,12 +19,159 @@
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/108984990" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<style>
+.nb-practice-block{
+  font-family:'Onest',system-ui,-apple-system,sans-serif;
+  text-align:center;
+  color:#0F1B2D;
+}
+.nb-practice-block *{margin:0;padding:0;box-sizing:border-box}
+.nb-pb-title{
+  font-size:16px;
+  font-weight:700;
+  color:#0F1B2D;
+  text-align:center;
+  margin-bottom:12px;
+}
+.nb-lk-card{
+  background:#fff;
+  border-radius:16px;
+  border:1.5px solid #DCE6EE;
+  box-shadow:0 4px 20px rgba(15,27,45,.07);
+  overflow:hidden;
+  margin-bottom:12px;
+  text-align:left;
+}
+.nb-lk-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 16px;
+  border-bottom:1px solid #DCE6EE;
+  font-size:12px;
+  font-weight:600;
+  color:#3D4D63;
+  background:rgba(247,250,253,.8);
+}
+.nb-lk-header svg{flex-shrink:0}
+.nb-lk-body{display:flex}
+.nb-lk-nav{
+  width:40%;
+  padding:12px 8px;
+  border-right:1px solid #DCE6EE;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.nb-lk-nav-item{
+  font-size:10px;
+  color:#6B7889;
+  padding:6px 8px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  white-space:nowrap;
+}
+.nb-lk-nav-item.active{
+  background:rgba(255,217,116,.18);
+  color:#0F1B2D;
+  font-weight:600;
+}
+.nb-lk-nav-item span{font-size:11px}
+.nb-lk-main{
+  flex:1;
+  padding:12px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.nb-lk-practice-title{
+  font-size:13px;
+  font-weight:700;
+  color:#0F1B2D;
+}
+.nb-lk-video{
+  position:relative;
+  border-radius:8px;
+  overflow:hidden;
+  aspect-ratio:16/10;
+}
+.nb-lk-video img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.nb-lk-video-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.25) 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.nb-lk-play{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:rgba(255,255,255,.3);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border:1.5px solid rgba(255,255,255,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding-left:2px;
+}
+.nb-lk-desc{
+  font-size:9px;
+  color:#6B7889;
+  line-height:1.4;
+  overflow:hidden;
+  max-height:28px;
+  -webkit-mask-image:linear-gradient(180deg,#000 40%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 40%,transparent 100%);
+}
+.nb-pb-sub{
+  font-size:14px;
+  color:#6B7889;
+  line-height:1.55;
+  margin-bottom:12px;
+  text-align:center;
+}
+.nb-pb-disclaimers{margin-top:10px}
+.nb-pb-disc{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  color:#6B7889;
+  margin-bottom:6px;
+  line-height:1.4;
+  cursor:pointer;
+}
+.nb-pb-disc input[type="checkbox"]{
+  width:14px;
+  height:14px;
+  flex-shrink:0;
+  accent-color:#E8713A;
+  margin:0;
+  cursor:pointer;
+}
+.nb-pb-disc a{color:#E8713A;text-decoration:underline}
+</style>
 </head>
 <body>
 
 <div class="phone">
 
 <div class="page">
+
+<div id="welcomeBanner" class="welcome-banner" style="display:none">
+  ✅ Ваш аккаунт зарегистрирован! Письмо с логином и паролем отправлено на вашу почту.
+  <span id="welcomeClose" class="welcome-close">×</span>
+</div>
 
 <div class="padded">
 
@@ -69,19 +216,22 @@
 
   <p class="lead">Опиши своё состояние и получи персональную практику, чтобы <span class="lead-accent">уйти от панической атаки</span> и почувствовать себя легче прямо сейчас:</p>
 
-  <div class="input-box">
-    <textarea id="userText" class="input-textarea" rows="4" placeholder="Например: я чувствую тревогу, пустоту, нет сил, застряла, не понимаю что делать…"></textarea>
-    <div id="micBtn" class="input-mic" title="Голосовой ввод">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/>
-        <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
-      </svg>
+  <div id="heroForm">
+  <div class="input-box hero-input-box">
+    <div id="userText" class="input-textarea" contenteditable="true" role="textbox" spellcheck="true" data-placeholder="Например: я чувствую тревогу, пустоту, нет сил, застряла, не понимаю что делать…"><span id="heroInputSpacer" class="input-float-spacer" contenteditable="false" aria-hidden="true"></span></div>
+    <div class="input-btns-abs">
+      <div id="micBtn" class="input-mic" title="Голосовой ввод">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <button id="heroSend" class="chat-send-btn" aria-label="Отправить">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
-    <button id="heroSend" class="chat-send-btn" aria-label="Отправить">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
   </div>
 
   <div id="ctaMain" class="cta-btn">Разобрать состояние<br/>и получить практику бесплатно</div>
@@ -95,6 +245,7 @@
       <span>Конфиденциально · никто не увидит запрос</span>
     </div>
   </div>
+  </div><!-- /#heroForm -->
 </div>
 
 <div class="div"></div>
@@ -103,25 +254,25 @@
   <div class="prac-title">Пример практики (без деталей):</div>
 
   <div class="steps">
-    <div class="step" style="background-image:url(images/img04.jpg)">
+    <div class="step" style="background-image:url(images/praktika-1.png)">
       <div class="step-b">
         <div class="step-head"><span class="step-sn">1</span><span class="step-sl">Замахнись</span></div>
         <p class="step-sd">Выпусти напряжение и злость</p>
       </div>
     </div>
-    <div class="step" style="background-image:url(images/img05.jpg)">
+    <div class="step" style="background-image:url(images/praktika-2.png)">
       <div class="step-b">
         <div class="step-head"><span class="step-sn">2</span><span class="step-sl">Ударь по дивану</span></div>
         <p class="step-sd">Сделай сильный удар, можно громко</p>
       </div>
     </div>
-    <div class="step" style="background-image:url(images/img06.jpg)">
+    <div class="step" style="background-image:url(images/praktika-3.png)">
       <div class="step-b">
         <div class="step-head"><span class="step-sn">3</span><span class="step-sl">Выдохни</span></div>
         <p class="step-sd">Дыши глубоко и отпусти напряжение</p>
       </div>
     </div>
-    <div class="step" style="background-image:url(images/img07.jpg)">
+    <div class="step" style="background-image:url(images/praktika-4.png)">
       <div class="step-b">
         <div class="step-head"><span class="step-sn">4</span><span class="step-sl">Почувствуй легче</span></div>
         <p class="step-sd">Напряжение ушло</p>
@@ -251,19 +402,21 @@
   <div class="div" style="margin:20px 0 24px"></div>
   <p class="section-title">Ваш персональный разбор</p>
   <div id="chatMessages" class="chat-messages"></div>
-  <div class="input-box chat-input-box" id="chatInputBox">
-    <textarea id="chatInput" class="input-textarea" rows="2" placeholder="Напишите ответ…"></textarea>
-    <div id="chatMicBtn" class="input-mic" title="Голосовой ввод">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/>
-        <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
-      </svg>
+  <div class="chat-input-sticky" id="chatInputBox">
+    <div class="input-box chat-input-box">
+      <textarea id="chatInput" class="input-textarea" rows="2" placeholder="Напишите ответ…"></textarea>
+      <div id="chatMicBtn" class="input-mic" title="Голосовой ввод">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <button id="chatSend" class="chat-send-btn" aria-label="Отправить">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
-    <button id="chatSend" class="chat-send-btn" aria-label="Отправить">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
   </div>
 </div>
 
@@ -275,32 +428,59 @@
 <!-- Registration section (shown after chat trigger) -->
 <div id="regSection" class="padded" style="display:none">
   <div class="div" style="margin:20px 0 24px"></div>
-  <div class="reg-card">
-    <p class="reg-subtitle">Спасибо, что ответили на мои вопросы, я подобрал практику под решение Вашей проблемы, чтобы пройти её и сохранить историю нашего чата — пройдите регистрацию и выполните практику. Практика бесплатная, регистрация нужна, чтобы Вы не потеряли к ней доступ.</p>
+  <div class="nb-practice-block">
+
+    <div class="nb-pb-title">Мы подобрали для Вас практику «№11»</div>
+
+    <div class="nb-lk-card">
+      <div class="nb-lk-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="#6B7889" stroke-width="1.6" fill="none"/><path d="M9 22V12h6v10" stroke="#6B7889" stroke-width="1.6" fill="none"/></svg>
+        <span>Личный кабинет</span>
+      </div>
+      <div class="nb-lk-body">
+        <div class="nb-lk-nav">
+          <div class="nb-lk-nav-item active"><span>▶</span> Мои практики</div>
+          <div class="nb-lk-nav-item"><span>📋</span> Разбор</div>
+          <div class="nb-lk-nav-item"><span>🧘</span> Медитации</div>
+          <div class="nb-lk-nav-item"><span>📖</span> Дневник</div>
+          <div class="nb-lk-nav-item"><span>⭐</span> Подписка</div>
+        </div>
+        <div class="nb-lk-main">
+          <div class="nb-lk-practice-title">Практика «Волчий глаз»</div>
+          <div class="nb-lk-video">
+            <img src="images/volk.jpg" alt="Превью практики" />
+            <div class="nb-lk-video-overlay">
+              <div class="nb-lk-play">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="nb-lk-desc">Данная практика выполняется в домашних условиях, потребуется поверхность дивана или кровати...</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="nb-pb-sub">Она ждёт Вас в личном кабинете.<br/>Введите Ваш email, чтобы получить бесплатный доступ.</p>
+
     <div id="regError" class="auth-error"></div>
-    <input type="email" id="regEmail" class="auth-input" placeholder="Ваш email" autocomplete="email">
-    <input type="password" id="regPass" class="auth-input" placeholder="Придумайте пароль (мин. 6 символов)" autocomplete="new-password">
-    <label class="reg-checkbox">
-      <input type="checkbox" id="regCheck1">
-      <span>Я принимаю <a href="https://analyze.inter-removals.com/en/articles/10222767-terms-and-conditions" target="_blank" rel="noopener">условия использования</a></span>
-    </label>
-    <label class="reg-checkbox">
-      <input type="checkbox" id="regCheck2">
-      <span>Я соглашаюсь на <a href="https://analyze.inter-removals.com/en/articles/10689565-uxcam-data-processing-agreement" target="_blank" rel="noopener">обработку персональных данных</a></span>
-    </label>
-    <button id="regSubmit" class="cta-btn">Получить практику</button>
+    <input class="auth-input" type="email" id="regEmail" placeholder="Ваш email" autocomplete="email" style="margin-bottom:12px" />
+
+    <button id="regSubmit" class="cta-btn">Получить доступ</button>
+
+    <div class="nb-pb-disclaimers">
+      <label class="nb-pb-disc"><input type="checkbox" id="regCheck1" /><span>Я принимаю <a href="https://analyze.inter-removals.com/en/articles/10222767-terms-and-conditions" target="_blank" rel="noopener">условия использования</a></span></label>
+      <label class="nb-pb-disc"><input type="checkbox" id="regCheck2" /><span>Я соглашаюсь на <a href="https://analyze.inter-removals.com/en/articles/10689565-uxcam-data-processing-agreement" target="_blank" rel="noopener">обработку персональных данных</a></span></label>
+    </div>
+
   </div>
 </div>
 
-<!-- Verification section (email code) -->
+<!-- Check email section (shown after registration) -->
 <div id="verifySection" class="padded" style="display:none">
   <div class="div" style="margin:20px 0 24px"></div>
   <div class="reg-card">
-    <p class="reg-title">Проверьте почту</p>
-    <p class="reg-subtitle">Введите 6-значный код из письма</p>
-    <div id="verifyError" class="auth-error"></div>
-    <input type="text" id="verifyCode" class="auth-input code-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
-    <button id="verifySubmit" class="cta-btn">Подтвердить</button>
+    <p class="reg-title">📩 Проверьте почту</p>
+    <p class="reg-subtitle">Мы отправили ссылку для подтверждения на ваш email. Перейдите по ней — и вы сразу окажетесь в личном кабинете. Второе письмо с логином и паролем придёт следом.</p>
     <p class="reg-resend">Не пришло письмо? <span id="resendCode">Отправить снова</span></p>
   </div>
 </div>

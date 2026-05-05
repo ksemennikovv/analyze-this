@@ -52,6 +52,13 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .input-mic{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:var(--t2);transition:background .2s,color .2s;margin-top:-2px;position:relative}
 .input-mic:hover{background:rgba(15,27,45,.05)}
 
+/* ---- Hero input: text wraps around bottom-right buttons ---- */
+.hero-input-box{position:relative;display:block}
+.hero-input-box .input-textarea{display:block;width:100%;outline:none;word-break:break-word;white-space:pre-wrap;cursor:text;flex:unset}
+.input-float-spacer{float:right;width:82px;height:90px;shape-outside:inset(46px 0 0 0);pointer-events:none}
+.input-btns-abs{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:row;gap:8px;align-items:center;z-index:1}
+.input-textarea[contenteditable].is-empty::before{content:attr(data-placeholder);color:var(--t4);font-size:15px;pointer-events:none;display:block}
+
 .cta-btn{background:linear-gradient(135deg,#FFD974 0%,#F5B848 45%,#E89B2C 100%);color:#3B1F0A;text-align:center;padding:16px 18px;border-radius:18px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:-.1px;line-height:1.35;border:none;outline:none;box-shadow:0 4px 11px rgba(232,155,44,.32),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(180,110,30,.18);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s,background .25s;position:relative;overflow:hidden;margin-bottom:14px}
 .cta-btn::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);animation:shim 4s infinite}
 .cta-btn:hover{transform:translateY(-2px) scale(1.015);box-shadow:0 7px 16px rgba(232,155,44,.42),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(180,110,30,.22);background:linear-gradient(135deg,#FFE095 0%,#F8C25E 45%,#EDA73B 100%)}
@@ -356,13 +363,13 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .chat-typing span:nth-child(3){animation-delay:.4s}
 @keyframes chat-dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 
-.chat-input-box{
-  margin-bottom:0;align-items:flex-end;
+.chat-input-sticky{
   position:sticky;bottom:0;z-index:10;
   background:var(--bg);
   margin-left:-20px;margin-right:-20px;
   padding:8px 20px 14px;
 }
+.chat-input-box{margin-bottom:0;align-items:flex-end}
 .chat-send-btn{
   width:36px;height:36px;border-radius:50%;flex-shrink:0;
   border:none;cursor:pointer;
@@ -561,15 +568,18 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 
 .brand{align-items:center}
 
+.welcome-banner{background:#e8f8ee;border-bottom:2px solid #25D366;color:#1a5c35;font-size:14px;font-weight:500;padding:12px 40px 12px 16px;line-height:1.4;position:relative}
+.welcome-close{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px;line-height:1;color:#1a5c35;opacity:.7}
+
 /* ============ REG / VERIFY CARDS ============ */
 .reg-card{
-  background:var(--card);border-radius:20px;padding:24px 20px;
+  background:var(--card);border-radius:20px;padding:20px;
   box-shadow:0 4px 16px rgba(15,27,45,.08);
-  display:flex;flex-direction:column;gap:14px;
+  display:flex;flex-direction:column;gap:12px;
   animation:fu .35s ease both
 }
 .reg-title{font-size:17px;font-weight:700;color:var(--t1);text-align:center;letter-spacing:-.2px}
-.reg-subtitle{font-size:13px;color:var(--t3);text-align:center;margin-top:-6px;font-weight:400;line-height:1.4}
+.reg-subtitle{font-size:13px;color:var(--t3);text-align:center;font-weight:400;line-height:1.4}
 .reg-checkbox{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2);line-height:1.45;cursor:pointer}
 .reg-checkbox input[type="checkbox"]{width:18px;height:18px;min-width:18px;margin-top:1px;accent-color:var(--cta);cursor:pointer}
 .reg-checkbox a{color:var(--cta);text-decoration:underline}
@@ -595,6 +605,22 @@ body{font-family:'Onest',system-ui,sans-serif;background:#BDD0E2;min-height:100v
 .video-placeholder__text{font-size:14px;color:var(--t3);font-weight:500}
 
 /* ============ MENU LOGIN FORM ============ */
-.side-menu__login{display:flex;flex-direction:column;gap:12px;padding:8px 0}
-.side-menu__login-title{font-size:15px;font-weight:700;color:var(--t1);text-align:center}
+.side-menu__login{display:flex;flex-direction:column;gap:6px;padding:4px 0}
+.side-menu__login-title{font-size:15px;font-weight:700;color:var(--t1);text-align:center;margin-bottom:6px}
+#menuStepLogin,#menuStepForgot,#menuStepReset{display:flex;flex-direction:column;gap:10px}
 .menu-login-btn{margin-bottom:0}
+
+/* ============ CABINET PREVIEW (reg section) ============ */
+.cabinet-preview{border:1.5px solid var(--bd);border-radius:14px;overflow:hidden;background:#fff}
+.cabinet-preview__header{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--bd);font-size:12px;font-weight:600;color:var(--t2)}
+.cabinet-preview__body{display:flex}
+.cabinet-preview__nav{width:108px;flex-shrink:0;border-right:1px solid var(--bd);padding:6px 0;display:flex;flex-direction:column;gap:1px}
+.cabinet-nav__item{display:flex;align-items:center;gap:5px;padding:6px 8px;font-size:11px;color:var(--t3);line-height:1.2}
+.cabinet-nav__item--active{font-weight:700;color:var(--t1);background:rgba(232,155,44,.08);border-radius:6px;margin:0 4px;padding:6px 6px}
+.cabinet-preview__content{flex:1;padding:10px;min-width:0}
+.cabinet-practice__title{font-size:11px;font-weight:700;color:var(--t1);margin-bottom:7px}
+.cabinet-practice__thumb{position:relative;border-radius:8px;overflow:hidden;margin-bottom:7px;aspect-ratio:16/9}
+.cabinet-practice__thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.cabinet-practice__play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.22)}
+.cabinet-practice__play svg{filter:drop-shadow(0 1px 4px rgba(0,0,0,.3))}
+.cabinet-practice__desc{font-size:10px;color:var(--t4);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
