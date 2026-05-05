@@ -1,0 +1,23 @@
+Options -Indexes
+DirectoryIndex index.php index.html
+
+ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# 1. HTTP → HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# 2. www → non-www
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+# 3. index.html → canonical URL без index.html
+RewriteRule ^index\.html$ / [R=301,L]
+RewriteRule ^(.*/)index\.html$ /$1 [R=301,L]
+
+# 4. Trailing slash (не для файлов)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^ %{REQUEST_URI}/ [R=301,L]
