@@ -16,8 +16,3 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 # 3. index.html → canonical URL без index.html
 RewriteRule ^index\.html$ / [R=301,L]
 RewriteRule ^(.*/)index\.html$ /$1 [R=301,L]
-
-# 4. Trailing slash (не для файлов)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !/$
-RewriteRule ^ %{REQUEST_URI}/ [R=301,L]
