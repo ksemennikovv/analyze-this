@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"d:/sem/kir/analyze.inter-removals.com/site2/\"*.php 2>/dev/null | head -20)",
+      "Read(//d/sem/kir/analyze.inter-removals.com/site2/**)"
+    ]
+  }
+}
