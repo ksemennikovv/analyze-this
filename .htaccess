@@ -16,3 +16,32 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 # 3. index.html → canonical URL без index.html
 RewriteRule ^index\.html$ / [R=301,L]
 RewriteRule ^(.*/)index\.html$ /$1 [R=301,L]
+
+# 4. Block direct access to sensitive directories
+RewriteRule ^(config|src|database|storage|prompts)(/|$) - [F,L]
+
+# 5. Block .env and other sensitive files
+<FilesMatch "(^\.env|\.log|\.sql|\.md|composer\.json|composer\.lock|package\.json)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# 6. Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 7. Cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css             "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png            "access plus 1 month"
+    ExpiresByType image/jpeg           "access plus 1 month"
+    ExpiresByType image/webp           "access plus 1 month"
+    ExpiresByType image/svg+xml        "access plus 1 month"
+    ExpiresByType font/woff2           "access plus 1 year"
+</IfModule>

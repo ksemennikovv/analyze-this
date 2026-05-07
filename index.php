@@ -1,7 +1,11 @@
 <?php
+require_once __DIR__ . '/config/app.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/src/db/Database.php';
+
 $pageTitle = 'NirvaBody — Индивидуальный ИИ-разбор и подбор телесных практик';
-$pageCss   = ['/assets/css/pages/landing.css'];
-$pageJs    = ['/assets/js/pages/landing.js'];
+$pageCss   = ['/assets/css/landing.css'];
+$pageJs    = ['/assets/js/landing.js'];
 require __DIR__ . '/includes/head.php';
 ?>
 
@@ -10,10 +14,8 @@ require __DIR__ . '/includes/head.php';
 
 <?php require __DIR__ . '/includes/header.php'; ?>
 
-<?php require __DIR__ . '/pages/landing-content.php'; ?>
+<?php require __DIR__ . '/pages/landing.php'; ?>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
-
-<?php require __DIR__ . '/includes/auth-modal.php'; ?>
 
 <?php require __DIR__ . '/includes/scripts.php'; ?>
