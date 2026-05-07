@@ -1,4 +1,3 @@
-<script src="/assets/js/state.js"></script>
 <script src="/assets/js/ui.js"></script>
 <script src="/assets/js/api.js"></script>
 <script src="/assets/js/auth.js"></script>

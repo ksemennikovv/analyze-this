@@ -2,10 +2,13 @@
  * api.js — единая обёртка над fetch
  * ================================================================ */
 var API = (function() {
-    var BASE = '/api/';
+
+    function url(endpoint) {
+        return endpoint.charAt(0) === '/' ? endpoint : '/api/' + endpoint;
+    }
 
     async function post(endpoint, data) {
-        var r = await fetch(BASE + endpoint, {
+        var r = await fetch(url(endpoint), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -16,12 +19,12 @@ var API = (function() {
     async function postForm(endpoint, data) {
         var body = new FormData();
         Object.entries(data).forEach(function([k, v]) { body.append(k, v); });
-        var r = await fetch(BASE + endpoint, { method: 'POST', body: body });
+        var r = await fetch(url(endpoint), { method: 'POST', body: body });
         return r.json();
     }
 
     async function get(endpoint) {
-        var r = await fetch(BASE + endpoint);
+        var r = await fetch(url(endpoint));
         return r.json();
     }
 
@@ -41,8 +44,12 @@ var API = (function() {
 
     function getSession() { return get('user-session.php'); }
 
-    function register(email, history) {
-        return post('auth-register.php', { email: email, history: history || [] });
+    function register(params) {
+        return post('auth-register.php', {
+            email:   params.email,
+            name:    params.name    || '',
+            history: params.history || []
+        });
     }
 
     function resendVerification(email) {

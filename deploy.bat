@@ -9,47 +9,43 @@ if /i "%1"=="full" (
   echo [FULL] Creating %ARCHIVE%...
   %ZIP% a -tzip %ARCHIVE% ^
     assets ^
-    css ^
     includes ^
-    js ^
     pages ^
-    php ^
+    api ^
+    config ^
+    src ^
+    prompts ^
+    database ^
     images ^
     videos ^
-    prompt.txt ^
+    storage ^
     robots.txt ^
     .htaccess ^
+    sitemap.xml ^
     *.php ^
     -xr!*.bat ^
     -xr!*.zip ^
     -xr!*debug.txt ^
-    -xr!*amo_log.txt ^
-    -xr!amo\tokens.txt ^
-    -xr!wp-content\cache ^
-    -xr!wp-content\backups-dup-lite ^
-    -xr!wp-content\backups-dup-pro ^
-    -xr!wp-content\docket-cache-data ^
-    -xr!wp-content\wpo-cache ^
-    -xr!wp-content\upgrade ^
-    -xr!wp-content\upgrade-temp-backup
+    -xr!storage\logs\*.log
 ) else (
   echo [DEFAULT] Creating %ARCHIVE%...
   %ZIP% a -tzip %ARCHIVE% ^
     assets ^
-    css ^
     includes ^
-    js ^
     pages ^
-    php ^
-    prompt.txt ^
+    api ^
+    config ^
+    src ^
+    prompts ^
+    database ^
     robots.txt ^
     .htaccess ^
+    sitemap.xml ^
     *.php ^
     -xr!*.bat ^
     -xr!*.zip ^
     -xr!*debug.txt ^
-    -xr!*amo_log.txt ^
-    -xr!amo\tokens.txt
+    -xr!storage\logs\*.log
 )
 
 echo Done: %ARCHIVE%

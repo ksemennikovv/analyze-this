@@ -1,23 +1,26 @@
-<?php
-function require_auth(): void {
-    if (empty($_SESSION['user_id'])) {
-        http_response_code(401);
-        echo json_encode(['ok' => false, 'error' => 'Unauthorized']);
-        exit;
+/* ================================================================
+ * api.js — единая обёртка над fetch
+ * ================================================================ */
+var API = (function() {
+
+    function url(endpoint) {
+        return endpoint.charAt(0) === '/' ? endpoint : '/api/' + endpoint;
     }
-}
 
-function require_auth_redirect(string $to = '/'): void {
-    if (empty($_SESSION['user_id'])) {
-        header('Location: ' . $to);
-        exit;
+    async function post(endpoint, data) {
+        var r = await fetch(url(endpoint), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        return r.json();
     }
-}
 
-function hash_password(string $plain): string {
-    return password_hash($plain, PASSWORD_BCRYPT);
-}
+    async function postForm(endpoint, data) {
+        var body = new FormData();
+        Object.entries(data).forEach(function([k, v]) { body.append(k, v); });
+        var r = await fetch(url(endpoint), { method: 'POST', body: body });
+        return r.json();
+    }
 
-function verify_password(string $plain, string $hash): bool {
-    return password_verify($plain, $hash);
-}
+    async f

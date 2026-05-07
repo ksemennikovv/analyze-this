@@ -12,5 +12,6 @@
 <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>">
 <?php endforeach; ?>
 <?php require __DIR__ . '/analytics.php'; ?>
+<script src="/assets/js/state.js"></script>
 </head>
 <body>

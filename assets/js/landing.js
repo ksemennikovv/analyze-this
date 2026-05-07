@@ -36,7 +36,7 @@
     })();
 
     /* ---- voice inputs ---- */
-    var heroInput = document.getElementById('heroInput');
+    var heroInput = document.getElementById('userText');
     var heroSpacer = document.getElementById('heroInputSpacer');
     var heroVoice = initVoiceInput('micBtn', heroInput, {
         contentEditable: !!heroSpacer,

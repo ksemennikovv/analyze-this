@@ -14,4 +14,3 @@ require __DIR__ . '/includes/head.php';
 <?php require __DIR__ . '/pages/reset-password.php'; ?>
 <?php require __DIR__ . '/includes/footer.php'; ?>
 <?php require __DIR__ . '/includes/scripts.php'; ?>
-</div></div></body></html>

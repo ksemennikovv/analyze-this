@@ -20,6 +20,10 @@ $pageCss   = ['/assets/css/dashboard.css'];
 $pageJs    = ['/assets/js/dashboard.js', '/assets/js/dashboard-feed.js', '/assets/js/current-action.js'];
 require __DIR__ . '/includes/head.php';
 ?>
+<script>
+AppState.isLoggedIn = true;
+AppState.user = <?= json_encode(['id' => $user['id'], 'name' => $user['name'], 'email' => $user['email']]) ?>;
+</script>
 
 <div class="phone">
 <div class="page">
@@ -31,7 +35,3 @@ require __DIR__ . '/includes/head.php';
 <?php require __DIR__ . '/includes/footer.php'; ?>
 
 <?php require __DIR__ . '/includes/scripts.php'; ?>
-</div>
-</div>
-</body>
-</html>

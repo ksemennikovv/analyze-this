@@ -10,7 +10,7 @@ SET foreign_key_checks = 0;
 -- users
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `users` (
-  `id`                  INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id`                  INT          NOT NULL AUTO_INCREMENT,
   `email`               VARCHAR(255) NOT NULL,
   `password_hash`       VARCHAR(255) NOT NULL,
   `name`                VARCHAR(100)          DEFAULT NULL,
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- conversations  (одна на пользователя — расширяемо)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `conversations` (
-  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`    INT UNSIGNED NOT NULL,
+  `id`         INT NOT NULL AUTO_INCREMENT,
+  `user_id`    INT NOT NULL,
   `type`       VARCHAR(50)  NOT NULL DEFAULT 'analysis',
   `created_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS `conversations` (
 -- messages
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `messages` (
-  `id`              INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `conversation_id` INT UNSIGNED NOT NULL,
-  `user_id`         INT UNSIGNED NOT NULL,
+  `id`              INT NOT NULL AUTO_INCREMENT,
+  `conversation_id` INT NOT NULL,
+  `user_id`         INT NOT NULL,
   `role`            ENUM('user','assistant','system') NOT NULL,
   `content`         TEXT         NOT NULL,
   `created_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS `messages` (
 -- user_memory  (AI-контекст: краткое резюме)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_memory` (
-  `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`      INT UNSIGNED NOT NULL,
+  `id`           INT NOT NULL AUTO_INCREMENT,
+  `user_id`      INT NOT NULL,
   `summary`      TEXT,
   `key_topics`   JSON,
   `emotional_state` VARCHAR(255) DEFAULT NULL,
@@ -77,12 +77,12 @@ CREATE TABLE IF NOT EXISTS `user_memory` (
 -- practices  (библиотека)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `practices` (
-  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `number`      INT UNSIGNED NOT NULL,
+  `id`          INT NOT NULL AUTO_INCREMENT,
+  `number`      INT NOT NULL,
   `title`       VARCHAR(255) NOT NULL,
   `description` TEXT,
   `video_url`   VARCHAR(500),
-  `duration_sec` INT UNSIGNED DEFAULT NULL,
+  `duration_sec` INT DEFAULT NULL,
   `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_practice_number` (`number`)
@@ -92,8 +92,8 @@ CREATE TABLE IF NOT EXISTS `practices` (
 -- flow_steps  (ядро системы состояний)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `flow_steps` (
-  `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`      INT UNSIGNED NOT NULL,
+  `id`           INT NOT NULL AUTO_INCREMENT,
+  `user_id`      INT NOT NULL,
   `type`         ENUM(
                    'initial_analysis',
                    'practice_assigned',
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `flow_steps` (
                    'payment_gate'
                  ) NOT NULL,
   `status`       ENUM('active','completed','skipped') NOT NULL DEFAULT 'active',
-  `practice_id`  INT UNSIGNED DEFAULT NULL,
+  `practice_id`  INT DEFAULT NULL,
   `topic`        VARCHAR(255) DEFAULT NULL,
   `data`         JSON,
   `created_at`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -123,10 +123,10 @@ CREATE TABLE IF NOT EXISTS `flow_steps` (
 -- user_practices
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_practices` (
-  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`     INT UNSIGNED NOT NULL,
-  `practice_id` INT UNSIGNED NOT NULL,
-  `step_id`     INT UNSIGNED DEFAULT NULL,
+  `id`          INT NOT NULL AUTO_INCREMENT,
+  `user_id`     INT NOT NULL,
+  `practice_id` INT NOT NULL,
+  `step_id`     INT DEFAULT NULL,
   `assigned_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `started_at`  DATETIME DEFAULT NULL,
   `completed_at` DATETIME DEFAULT NULL,
@@ -141,10 +141,10 @@ CREATE TABLE IF NOT EXISTS `user_practices` (
 -- practice_reports
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `practice_reports` (
-  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`     INT UNSIGNED NOT NULL,
-  `step_id`     INT UNSIGNED NOT NULL,
-  `practice_id` INT UNSIGNED NOT NULL,
+  `id`          INT NOT NULL AUTO_INCREMENT,
+  `user_id`     INT NOT NULL,
+  `step_id`     INT NOT NULL,
+  `practice_id` INT NOT NULL,
   `summary`     TEXT,
   `created_at`  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -158,11 +158,11 @@ CREATE TABLE IF NOT EXISTS `practice_reports` (
 -- meditations
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `meditations` (
-  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id`          INT NOT NULL AUTO_INCREMENT,
   `title`       VARCHAR(255) NOT NULL,
   `description` TEXT,
   `audio_url`   VARCHAR(500),
-  `duration_sec` INT UNSIGNED DEFAULT NULL,
+  `duration_sec` INT DEFAULT NULL,
   `is_free`     TINYINT(1)   NOT NULL DEFAULT 0,
   `price`       DECIMAL(10,2)         DEFAULT NULL,
   `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -173,9 +173,9 @@ CREATE TABLE IF NOT EXISTS `meditations` (
 -- user_meditations
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_meditations` (
-  `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`       INT UNSIGNED NOT NULL,
-  `meditation_id` INT UNSIGNED NOT NULL,
+  `id`            INT NOT NULL AUTO_INCREMENT,
+  `user_id`       INT NOT NULL,
+  `meditation_id` INT NOT NULL,
   `unlocked_at`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `unlock_type`   ENUM('free','purchased','bonus') NOT NULL DEFAULT 'purchased',
   PRIMARY KEY (`id`),
@@ -188,8 +188,8 @@ CREATE TABLE IF NOT EXISTS `user_meditations` (
 -- subscriptions
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `subscriptions` (
-  `id`             INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`        INT UNSIGNED NOT NULL,
+  `id`             INT NOT NULL AUTO_INCREMENT,
+  `user_id`        INT NOT NULL,
   `status`         ENUM('active','cancelled','expired','trial') NOT NULL DEFAULT 'active',
   `period_start`   DATE         NOT NULL,
   `period_end`     DATE         NOT NULL,
@@ -207,8 +207,8 @@ CREATE TABLE IF NOT EXISTS `subscriptions` (
 -- subscription_bonus_months  (реферальные бонусные месяцы)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `subscription_bonus_months` (
-  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`    INT UNSIGNED NOT NULL,
+  `id`         INT NOT NULL AUTO_INCREMENT,
+  `user_id`    INT NOT NULL,
   `months`     INT          NOT NULL DEFAULT 1,
   `reason`     VARCHAR(255),
   `applied`    TINYINT(1)   NOT NULL DEFAULT 0,
@@ -222,8 +222,8 @@ CREATE TABLE IF NOT EXISTS `subscription_bonus_months` (
 -- analysis_credits  (пакеты дополнительных анализов)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `analysis_credits` (
-  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`     INT UNSIGNED NOT NULL,
+  `id`          INT NOT NULL AUTO_INCREMENT,
+  `user_id`     INT NOT NULL,
   `amount`      INT          NOT NULL DEFAULT 1,
   `used`        INT          NOT NULL DEFAULT 0,
   `expires_at`  DATETIME              DEFAULT NULL,
@@ -238,10 +238,10 @@ CREATE TABLE IF NOT EXISTS `analysis_credits` (
 -- analysis_usage  (лог использования анализов)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `analysis_usage` (
-  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`     INT UNSIGNED NOT NULL,
-  `credit_id`   INT UNSIGNED          DEFAULT NULL,
-  `flow_step_id` INT UNSIGNED         DEFAULT NULL,
+  `id`          INT NOT NULL AUTO_INCREMENT,
+  `user_id`     INT NOT NULL,
+  `credit_id`   INT          DEFAULT NULL,
+  `flow_step_id` INT         DEFAULT NULL,
   `type`        ENUM('included','credit') NOT NULL DEFAULT 'included',
   `period`      VARCHAR(7)   NOT NULL,
   `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -257,15 +257,15 @@ CREATE TABLE IF NOT EXISTS `analysis_usage` (
 -- payments
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `payments` (
-  `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`      INT UNSIGNED NOT NULL,
+  `id`           INT NOT NULL AUTO_INCREMENT,
+  `user_id`      INT NOT NULL,
   `type`         ENUM('subscription','analysis_package','meditation') NOT NULL,
   `amount`       DECIMAL(10,2) NOT NULL,
   `currency`     VARCHAR(3)    NOT NULL DEFAULT 'RUB',
   `status`       ENUM('pending','completed','failed','refunded') NOT NULL DEFAULT 'pending',
   `provider`     VARCHAR(50)           DEFAULT NULL,
   `provider_ref` VARCHAR(255)          DEFAULT NULL,
-  `item_id`      INT UNSIGNED          DEFAULT NULL,
+  `item_id`      INT          DEFAULT NULL,
   `meta`         JSON,
   `created_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -279,8 +279,8 @@ CREATE TABLE IF NOT EXISTS `payments` (
 -- referral_codes
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `referral_codes` (
-  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`    INT UNSIGNED NOT NULL,
+  `id`         INT NOT NULL AUTO_INCREMENT,
+  `user_id`    INT NOT NULL,
   `code`       VARCHAR(20)  NOT NULL,
   `created_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -293,10 +293,10 @@ CREATE TABLE IF NOT EXISTS `referral_codes` (
 -- referrals
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `referrals` (
-  `id`             INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `referrer_id`    INT UNSIGNED NOT NULL,
-  `referred_id`    INT UNSIGNED NOT NULL,
-  `code_id`        INT UNSIGNED NOT NULL,
+  `id`             INT NOT NULL AUTO_INCREMENT,
+  `referrer_id`    INT NOT NULL,
+  `referred_id`    INT NOT NULL,
+  `code_id`        INT NOT NULL,
   `status`         ENUM('clicked','registered','paid','rewarded') NOT NULL DEFAULT 'registered',
   `reward_claimed` TINYINT(1)   NOT NULL DEFAULT 0,
   `created_at`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `referrals` (
 -- pricing_campaigns  (динамические цены / акции)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `pricing_campaigns` (
-  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id`         INT NOT NULL AUTO_INCREMENT,
   `name`       VARCHAR(100) NOT NULL,
   `type`       VARCHAR(50)  NOT NULL,
   `price`      DECIMAL(10,2) NOT NULL,
@@ -328,13 +328,13 @@ CREATE TABLE IF NOT EXISTS `pricing_campaigns` (
 -- user_media_sessions  (трекинг видео/аудио)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_media_sessions` (
-  `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id`           INT NOT NULL AUTO_INCREMENT,
   `session_id`   VARCHAR(100) NOT NULL,
-  `user_id`      INT UNSIGNED          DEFAULT NULL,
-  `media_id`     INT UNSIGNED          DEFAULT NULL,
+  `user_id`      INT          DEFAULT NULL,
+  `media_id`     INT          DEFAULT NULL,
   `media_type`   ENUM('practice','meditation','other') NOT NULL DEFAULT 'other',
   `event`        ENUM('start','progress','complete','abandon') NOT NULL,
-  `progress_pct` TINYINT UNSIGNED      DEFAULT NULL,
+  `progress_pct` TINYINT      DEFAULT NULL,
   `created_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_ums_session` (`session_id`),
@@ -343,3 +343,4 @@ CREATE TABLE IF NOT EXISTS `user_media_sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET foreign_key_checks = 1;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
