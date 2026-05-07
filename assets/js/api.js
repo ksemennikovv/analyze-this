@@ -44,12 +44,8 @@ var API = (function() {
 
     function getSession() { return get('user-session.php'); }
 
-    function register(params) {
-        return post('auth-register.php', {
-            email:   params.email,
-            name:    params.name    || '',
-            history: params.history || []
-        });
+    function register(email, history) {
+        return post('auth-register.php', { email: email, history: history || [] });
     }
 
     function resendVerification(email) {
