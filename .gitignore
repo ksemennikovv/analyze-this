@@ -2,3 +2,6 @@ php/api.php
 php/db.php
 php/config.php
 prompt.txt
+config/ai.php
+config/database.php
+storage/logs/*.log
