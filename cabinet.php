@@ -14,8 +14,8 @@ if (!empty($_SESSION['user_id'])) {
 }
 
 $pageTitle = 'Личный кабинет — NirvaBody';
-$pageCss   = ['/assets/css/pages/cabinet.css'];
-$pageJs    = ['/assets/js/pages/cabinet.js'];
+$pageCss   = ['/assets/css/pages/dashboard.css'];
+$pageJs    = ['/assets/js/pages/dashboard.js'];
 require __DIR__ . '/includes/head.php';
 ?>
 

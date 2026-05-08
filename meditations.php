@@ -10,8 +10,8 @@ require_once __DIR__ . '/src/helpers/security.php';
 require_auth_redirect('/');
 
 $pageTitle = 'Медитации — NirvaBody';
-$pageCss   = ['/assets/css/meditations.css'];
-$pageJs    = ['/assets/js/meditations.js'];
+$pageCss   = ['/assets/css/pages/meditations.css'];
+$pageJs    = ['/assets/js/pages/meditations.js'];
 require __DIR__ . '/includes/head.php';
 ?>
 <div class="phone"><div class="page">

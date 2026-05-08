@@ -16,8 +16,8 @@ $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
 
 $pageTitle = 'Личный кабинет — NirvaBody';
-$pageCss   = ['/assets/css/dashboard.css'];
-$pageJs    = ['/assets/js/dashboard.js', '/assets/js/dashboard-feed.js', '/assets/js/current-action.js'];
+$pageCss   = ['/assets/css/pages/dashboard.css'];
+$pageJs    = ['/assets/js/pages/dashboard.js', '/assets/js/dashboard-feed.js', '/assets/js/current-action.js'];
 require __DIR__ . '/includes/head.php';
 ?>
 <script>

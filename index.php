@@ -4,8 +4,8 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/src/db/Database.php';
 
 $pageTitle = 'NirvaBody — Индивидуальный ИИ-разбор и подбор телесных практик';
-$pageCss   = ['/assets/css/landing.css'];
-$pageJs    = ['/assets/js/landing.js'];
+$pageCss   = ['/assets/css/pages/landing.css'];
+$pageJs    = ['/assets/js/pages/landing.js'];
 require __DIR__ . '/includes/head.php';
 ?>
 
