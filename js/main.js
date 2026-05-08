@@ -706,6 +706,8 @@ initCarousel('rvSlides','rvPrev','rvNext');
 
   var menuForgotEmail = '';
 
+  if(!menu || !overlay) return; /* not present on cabinet/payment pages */
+
   function openMenu(){ menu.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
   function closeMenu(){ menu.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
   function showStep(step){

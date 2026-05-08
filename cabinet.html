@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NirvaBody — Кабинет</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/cabinet.css">
+</head>
+<body>
+
+<div class="phone">
+<div class="page">
+
+<!-- ===== HEADER (shared, from style.css) ===== -->
+<div class="padded">
+  <div class="brand">
+    <div class="logo-orb" id="logoOrb">
+      <span class="logo-orb__rays">
+        <span class="logo-orb__ray" style="transform:rotate(0deg) translate(30px,0)"></span>
+        <span class="logo-orb__ray" style="transform:rotate(45deg) translate(30px,0)"></span>
+        <span class="logo-orb__ray" style="transform:rotate(90deg) translate(30px,0)"></span>
+        <span class="logo-orb__ray" style="transform:rotate(135deg) translate(30px,0)"></span>
+        <span class="logo-orb__ray" style="transform:rotate(180deg) translate(30px,0)"></span>
+        <span class="logo-orb__ray" style="transform:rotate(225deg) translate(30px,0)"></span>
+        <span class="logo-orb__ray" style="transform:rotate(270deg) translate(30px,0)"></span>
+        <span class="logo-orb__ray" style="transform:rotate(315deg) translate(30px,0)"></span>
+      </span>
+      <span class="logo-orb__stars">
+        <span class="logo-orb__star" style="transform:rotate(22.5deg) translate(40px) rotate(-22.5deg);animation-delay:0.00s;animation-duration:2.4s"></span>
+        <span class="logo-orb__star" style="transform:rotate(67.5deg) translate(40px) rotate(-67.5deg);animation-delay:-0.35s;animation-duration:2.75s"></span>
+        <span class="logo-orb__star" style="transform:rotate(112.5deg) translate(40px) rotate(-112.5deg);animation-delay:-0.70s;animation-duration:3.1s"></span>
+        <span class="logo-orb__star" style="transform:rotate(157.5deg) translate(40px) rotate(-157.5deg);animation-delay:-1.05s;animation-duration:3.45s"></span>
+        <span class="logo-orb__star" style="transform:rotate(202.5deg) translate(40px) rotate(-202.5deg);animation-delay:-1.40s;animation-duration:2.4s"></span>
+        <span class="logo-orb__star" style="transform:rotate(247.5deg) translate(40px) rotate(-247.5deg);animation-delay:-1.75s;animation-duration:2.75s"></span>
+        <span class="logo-orb__star" style="transform:rotate(292.5deg) translate(40px) rotate(-292.5deg);animation-delay:-2.10s;animation-duration:3.1s"></span>
+        <span class="logo-orb__star" style="transform:rotate(337.5deg) translate(40px) rotate(-337.5deg);animation-delay:-2.45s;animation-duration:3.45s"></span>
+      </span>
+      <img class="logo-orb__image logo-orb__image--idle" src="images/img01.png" alt="NirvaBody" />
+      <img class="logo-orb__image logo-orb__image--walking" src="images/img02.png" alt="" aria-hidden="true" />
+      <img class="logo-orb__image logo-orb__image--walking" src="images/img03.png" alt="" aria-hidden="true" />
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">NIRVABODY · ИИ</span>
+      <span class="brand-desc">Индивидуальный ИИ-разбор<br/>и подбор телесных практик</span>
+    </div>
+    <button id="menuToggle" class="menu-toggle" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== DIVIDER ===== -->
+<div class="div"></div>
+
+<!-- ===== GREETING ===== -->
+<div class="greeting" id="greetingEl">
+  <div class="greeting-title" id="greetingTitle"></div>
+  <div class="greeting-sub" id="greetingSub"></div>
+</div>
+
+<!-- ===== STEP CARD ===== -->
+<div class="step-card" id="stepCard">
+  <div class="step-header">
+    <div class="step-badge" id="stepBadge">1</div>
+    <div>
+      <div class="step-label" id="stepLabel">ШАГ 1</div>
+      <div class="step-title" id="stepTitle"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TASK CARD ===== -->
+<div class="task-card" id="taskCard">
+  <div class="task-header">
+    <div class="task-icon" id="taskIcon">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="22" fill="#FFF3DC"/>
+        <circle cx="22" cy="22" r="7" fill="#FFD974" stroke="#E89B2C" stroke-width="1.5"/>
+        <line x1="22" y1="9"  x2="22" y2="6"  stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+        <line x1="22" y1="38" x2="22" y2="35" stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+        <line x1="9"  y1="22" x2="6"  y2="22" stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+        <line x1="38" y1="22" x2="35" y2="22" stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+        <line x1="13.5" y1="13.5" x2="11.4" y2="11.4" stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+        <line x1="32.6" y1="32.6" x2="30.5" y2="30.5" stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+        <line x1="30.5" y1="13.5" x2="32.6" y2="11.4" stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+        <line x1="11.4" y1="32.6" x2="13.5" y2="30.5" stroke="#E89B2C" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="task-header-title" id="taskHeaderTitle">Задание дня</div>
+  </div>
+  <div class="task-body">
+    <div class="task-quote-open">"</div>
+    <div class="task-text" id="taskText"></div>
+    <div class="task-quote-close">"</div>
+  </div>
+</div>
+
+<!-- ===== PRACTICE CARD ===== -->
+<div class="pract-card" id="practCard">
+  <div class="pract-header">
+    <div class="pract-icon" id="practIcon">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="18" fill="#EDF9F5"/>
+        <ellipse cx="18" cy="20" rx="6" ry="8" fill="#00C49F" opacity=".35"/>
+        <path d="M18 28C18 28 10 23 10 16C10 12 13.6 9 18 9C22.4 9 26 12 26 16C26 23 18 28 18 28Z" stroke="#00B894" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M12 17C14 14 16 13 18 13C20 13 22 14 24 17" stroke="#00B894" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+        <circle cx="18" cy="11" r="2" fill="#00B894" opacity=".5"/>
+      </svg>
+    </div>
+    <div class="pract-header-title" id="practHeaderTitle"></div>
+  </div>
+  <div class="pract-video">
+    <div class="pract-video-overlay">
+      <div class="pract-play">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M8 5.14v14l11-7-11-7z" fill="#3B1F0A"/>
+        </svg>
+      </div>
+    </div>
+    <div class="pract-dur">12:00</div>
+  </div>
+</div>
+
+<!-- ===== CTA ACTION ===== -->
+<div class="cta-action" id="ctaAction">
+  <div class="cta-action-badge" id="ctaBadge">✨</div>
+  <div class="cta-action-text" id="ctaActionText">
+    <div class="cta-action-title">Следующий шаг готов</div>
+    <div class="cta-action-sub">Открыть день 4 →</div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="cab-footer" id="footerEl">NirvaBody · ИИ-разбор v1.0</div>
+
+</div><!-- /.page -->
+
+<!-- ===== DRAWER OVERLAY ===== -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- ===== DRAWER ===== -->
+<div class="drawer" id="drawer">
+
+  <!-- Profile -->
+  <div class="drawer-profile">
+    <svg class="drawer-avatar" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="23" cy="23" r="23" fill="#E2EAF3"/>
+      <circle cx="23" cy="18" r="7" fill="#A0B4CA"/>
+      <ellipse cx="23" cy="36" rx="12" ry="8" fill="#A0B4CA"/>
+    </svg>
+    <div class="drawer-user-info">
+      <div class="drawer-user-name" id="drawerUserName">Алеся</div>
+      <div class="drawer-user-email" id="drawerUserEmail">user@mail.ru</div>
+    </div>
+    <div class="drawer-close" id="drawerClose">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Subscription badge -->
+  <div class="drawer-sub">
+    <div class="drawer-sub-icon">⭐</div>
+    <div>
+      <div class="drawer-sub-label">Подписка</div>
+      <div class="drawer-sub-plan">Базовая · Активна</div>
+    </div>
+    <div class="drawer-sub-upgrade">Upgrade</div>
+  </div>
+
+  <div class="drawer-divider"></div>
+
+  <!-- Navigation -->
+  <nav class="drawer-nav">
+    <a href="cabinet.html" class="drawer-nav-item active">
+      <div class="drawer-nav-ic">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span>Кабинет</span>
+    </a>
+    <div class="drawer-nav-item">
+      <div class="drawer-nav-ic">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span>Практики</span>
+      <div class="drawer-nav-badge">Новое</div>
+    </div>
+    <div class="drawer-nav-item">
+      <div class="drawer-nav-ic">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M3 3v18h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7 16l4-5 4 3 4-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span>Прогресс</span>
+    </div>
+    <div class="drawer-nav-item">
+      <div class="drawer-nav-ic">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span>Помощь</span>
+    </div>
+  </nav>
+
+  <div class="drawer-divider"></div>
+
+  <!-- Language row -->
+  <div class="drawer-lang-row" id="drawerLangRow">
+    <div class="drawer-lang-row-ic">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 2C12 2 8 7 8 12s4 10 4 10M12 2c0 0 4 5 4 10s-4 10-4 10M2 12h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="drawer-lang-row-text">
+      <div class="drawer-lang-row-label">Язык</div>
+      <div class="drawer-lang-row-value" id="drawerLangValue">🇷🇺 Русский</div>
+    </div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="drawer-divider"></div>
+
+  <!-- Logout -->
+  <div class="drawer-logout" id="drawerLogout">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Выйти</span>
+  </div>
+
+  <div class="drawer-version">NirvaBody v1.0</div>
+
+</div><!-- /.drawer -->
+
+<!-- ===== LANGUAGE MODAL (clipped inside .phone) ===== -->
+<div class="lang-modal-overlay" id="langModalOverlay">
+  <div class="lang-modal">
+    <div class="lang-modal-handle"></div>
+    <div class="lang-modal-header">
+      <div class="lang-modal-title">Язык приложения</div>
+      <div class="lang-modal-close" id="langModalClose">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="lang-search-wrap">
+      <div class="lang-search-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <input type="search" id="langSearch" class="lang-search" placeholder="Поиск языка…" autocomplete="off">
+    </div>
+    <div class="lang-list" id="langList"></div>
+  </div>
+</div><!-- /.lang-modal-overlay -->
+
+</div><!-- /.phone -->
+
+<script src="js/main.js"></script>
+<script src="js/cabinet.js"></script>
+</body>
+</html>
