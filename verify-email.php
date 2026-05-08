@@ -13,17 +13,17 @@ $error    = '';
 
 if ($code && $email) {
     $db   = Database::getInstance();
-    $stmt = $db->prepare('SELECT id, name, verify_code, verify_code_expires FROM users WHERE email = ?');
+    $stmt = $db->prepare('SELECT id, name, verify_code, verify_expires FROM users WHERE email = ?');
     $stmt->bind_param('s', $email);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
 
     if (!$row || $row['verify_code'] !== $code) {
         $error = 'Неверный код подтверждения.';
-    } elseif ($row['verify_code_expires'] && strtotime($row['verify_code_expires']) < time()) {
+    } elseif ($row['verify_expires'] && strtotime($row['verify_expires']) < time()) {
         $error = 'Срок действия кода истёк. Запросите новый.';
     } else {
-        $stmt = $db->prepare('UPDATE users SET email_verified = 1, verify_code = NULL, verify_code_expires = NULL WHERE id = ?');
+        $stmt = $db->prepare('UPDATE users SET email_verified = 1, verify_code = NULL, verify_expires = NULL WHERE id = ?');
         $stmt->bind_param('i', $row['id']);
         $stmt->execute();
         session_regenerate_id(true);

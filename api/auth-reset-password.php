@@ -21,13 +21,16 @@ $db   = Database::getInstance();
 $stmt = $db->prepare('SELECT id, name, verify_code, verify_expires FROM users WHERE email = ?');
 $stmt->bind_param('s', $email);
 $stmt->execute();
-$row  = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$row    = $result->fetch_assoc();
+$result->free();
+$stmt->close();
 
 if (!$row || $row['verify_code'] !== $code) { json_error('Неверный код'); }
 if (strtotime($row['verify_expires']) < time()) { json_error('Код истёк — запросите новый'); }
 
 $hash = password_hash($password, PASSWORD_BCRYPT);
-$stmt = $db->prepare('UPDATE users SET password = ?, verify_code = NULL, verify_expires = NULL, email_verified = 1 WHERE id = ?');
+$stmt = $db->prepare('UPDATE users SET `password` = ?, verify_code = NULL, verify_expires = NULL, email_verified = 1 WHERE id = ?');
 $stmt->bind_param('si', $hash, $row['id']);
 $stmt->execute();
 

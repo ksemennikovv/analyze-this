@@ -13,12 +13,15 @@ $email = trim($_POST['email'] ?? '');
 $pass  = $_POST['password'] ?? '';
 
 $db   = Database::getInstance();
-$stmt = $db->prepare('SELECT id, password, name, email_verified FROM users WHERE email = ?');
+$stmt = $db->prepare('SELECT id, `password`, name, email_verified FROM users WHERE email = ?');
 if (!$stmt) { json_error('Таблица users не найдена — запустите schema.sql'); }
 
 $stmt->bind_param('s', $email);
 $stmt->execute();
-$row = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$row    = $result->fetch_assoc();
+$result->free();
+$stmt->close();
 
 if (!$row || !password_verify($pass, $row['password'])) {
     json_error('Неверный email или пароль');

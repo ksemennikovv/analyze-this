@@ -160,7 +160,7 @@ if ($action === 'reset') {
         exit;
     }
     $hash = password_hash($password, PASSWORD_BCRYPT);
-    $stmt = $db->prepare('UPDATE users SET password = ?, verify_code = NULL, verify_expires = NULL, email_verified = 1 WHERE id = ?');
+    $stmt = $db->prepare('UPDATE users SET `password` = ?, verify_code = NULL, verify_expires = NULL, email_verified = 1 WHERE id = ?');
     $stmt->bind_param('si', $hash, $row['id']);
     $stmt->execute();
     session_regenerate_id(true);

@@ -12,7 +12,7 @@ SET foreign_key_checks = 0;
 CREATE TABLE IF NOT EXISTS `users` (
   `id`                  INT          NOT NULL AUTO_INCREMENT,
   `email`               VARCHAR(255) NOT NULL,
-  `password_hash`       VARCHAR(255) NOT NULL,
+  `password`            VARCHAR(255) NOT NULL,
   `name`                VARCHAR(100)          DEFAULT NULL,
   `lang`                VARCHAR(10)           DEFAULT 'ru',
   `email_verified`      TINYINT(1)   NOT NULL DEFAULT 0,

@@ -34,20 +34,24 @@ $hash = password_hash($plainPwd, PASSWORD_BCRYPT);
 $stmt = $db->prepare('SELECT id, name, email_verified FROM users WHERE email = ?');
 $stmt->bind_param('s', $email);
 $stmt->execute();
-$row = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$row    = $result->fetch_assoc();
+$result->free();
+$stmt->close();
 
 if ($row) {
     if (!empty($row['email_verified'])) {
         json_error('Этот email уже зарегистрирован. Войдите через меню или нажмите «Забыл пароль».');
     }
-    $stmt = $db->prepare('UPDATE users SET password = ?, verify_code = ?, verify_expires = ? WHERE id = ?');
+    $stmt = $db->prepare('UPDATE users SET `password` = ?, verify_code = ?, verify_expires = ? WHERE id = ?');
+
     $stmt->bind_param('sssi', $hash, $code, $expires, $row['id']);
     $stmt->execute();
     $userId   = $row['id'];
     $userName = $row['name'] ?: $name;
 } else {
     $stmt = $db->prepare(
-        'INSERT INTO users (email, name, password, email_verified, verify_code, verify_expires) VALUES (?, ?, ?, 0, ?, ?)'
+        'INSERT INTO users (email, name, `password`, email_verified, verify_code, verify_expires) VALUES (?, ?, ?, 0, ?, ?)'
     );
     $stmt->bind_param('sssss', $email, $name, $hash, $code, $expires);
     $stmt->execute();

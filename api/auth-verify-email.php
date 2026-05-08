@@ -19,7 +19,10 @@ $db   = Database::getInstance();
 $stmt = $db->prepare('SELECT id, name, verify_code, verify_expires, video_url FROM users WHERE email = ?');
 $stmt->bind_param('s', $email);
 $stmt->execute();
-$row = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$row    = $result->fetch_assoc();
+$result->free();
+$stmt->close();
 
 if (!$row)                               { json_error('Пользователь не найден'); }
 if ($row['verify_code'] !== $code)       { json_error('Неверный код'); }

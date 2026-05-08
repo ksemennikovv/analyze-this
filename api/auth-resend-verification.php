@@ -21,7 +21,10 @@ $db   = Database::getInstance();
 $stmt = $db->prepare('SELECT id, email_verified FROM users WHERE email = ?');
 $stmt->bind_param('s', $email);
 $stmt->execute();
-$row  = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$row    = $result->fetch_assoc();
+$result->free();
+$stmt->close();
 
 if (!$row) { json_error('Email не найден'); }
 if (!empty($row['email_verified'])) { json_error('Email уже подтверждён'); }
