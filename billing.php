@@ -9,7 +9,7 @@ require_once __DIR__ . '/src/helpers/security.php';
 
 require_auth_redirect('/');
 
-$pageTitle = 'Подписка и оплата — NirvaBody';
+$pageTitle = 'Подписка и оплата — ' . APP_NAME;
 $pageCss   = ['/assets/css/billing.css'];
 $pageJs    = ['/assets/js/billing.js', '/assets/js/payments.js'];
 require __DIR__ . '/includes/head.php';

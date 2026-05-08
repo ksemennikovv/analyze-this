@@ -41,7 +41,7 @@
   </div>
 </div>
 
-<p class="footer-note">© NirvaBody · 2026 · Сделано с заботой <span class="heart">♥</span> о тебе</p>
+<p class="footer-note">© <?= APP_NAME ?> · 2026 · Сделано с заботой <span class="heart">♥</span> о тебе</p>
 
 </div><!-- /.page -->
 <div class="navh"><div></div></div>

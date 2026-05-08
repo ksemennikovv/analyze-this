@@ -4,6 +4,8 @@ ini_set('display_errors', 0);
 session_start();
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../config/mail.php';
 
 $input   = json_decode(file_get_contents('php://input'), true);
 $email   = trim($input['email']   ?? '');
@@ -64,19 +66,18 @@ if (!empty($history)) {
     }
 }
 
-$siteUrl    = 'https://analyze.inter-removals.com';
-$confirmUrl = $siteUrl . '/php/confirm.php?code=' . $code . '&email=' . urlencode($email);
+$confirmUrl = APP_DOMAIN . '/php/confirm.php?code=' . $code . '&email=' . urlencode($email);
 
 /* Email 1 — confirmation link */
-$subject1 = 'Подтвердите регистрацию — NirvaBody';
+$subject1 = 'Подтвердите регистрацию — ' . APP_NAME;
 $body1    = "Здравствуйте!\n\nДля подтверждения регистрации перейдите по ссылке:\n$confirmUrl\n\nСсылка действительна 24 часа.\n\nЕсли вы не регистрировались — проигнорируйте это письмо.";
-$headers1 = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
+$headers1 = "From: " . MAIL_FROM_NAME . " <" . MAIL_FROM . ">\r\nContent-Type: text/plain; charset=UTF-8";
 mail($email, $subject1, $body1, $headers1);
 
 /* Email 2 — credentials */
-$subject2 = 'Ваши данные для входа — NirvaBody';
-$body2    = "Здравствуйте!\n\nВаши данные для входа:\nЛогин: $email\nКод доступа: $plainPwd\n\nВойти можно через меню на сайте:\n$siteUrl\n\nРекомендуем сохранить эти данные.";
-$headers2 = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
+$subject2 = 'Ваши данные для входа — ' . APP_NAME;
+$body2    = "Здравствуйте!\n\nВаши данные для входа:\nЛогин: $email\nКод доступа: $plainPwd\n\nВойти можно через меню на сайте:\n" . APP_DOMAIN . "\n\nРекомендуем сохранить эти данные.";
+$headers2 = "From: " . MAIL_FROM_NAME . " <" . MAIL_FROM . ">\r\nContent-Type: text/plain; charset=UTF-8";
 mail($email, $subject2, $body2, $headers2);
 
 $_SESSION['pending_email'] = $email;

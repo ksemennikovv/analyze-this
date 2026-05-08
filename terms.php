@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/config/app.php';
-$pageTitle = 'Условия использования — NirvaBody';
+$pageTitle = 'Условия использования — ' . APP_NAME;
 $pageCss   = [];
 $pageJs    = [];
 require __DIR__ . '/includes/head.php';

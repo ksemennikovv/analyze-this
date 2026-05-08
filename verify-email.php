@@ -35,7 +35,7 @@ if ($code && $email) {
     $error = 'Неверная ссылка подтверждения.';
 }
 
-$pageTitle = 'Подтверждение email — NirvaBody';
+$pageTitle = 'Подтверждение email — ' . APP_NAME;
 $pageCss   = [];
 $pageJs    = [];
 require __DIR__ . '/includes/head.php';

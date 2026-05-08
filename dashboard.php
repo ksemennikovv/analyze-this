@@ -15,7 +15,7 @@ $stmt->bind_param('i', $_SESSION['user_id']);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
 
-$pageTitle = 'Личный кабинет — NirvaBody';
+$pageTitle = 'Личный кабинет — ' . APP_NAME;
 $pageCss   = ['/assets/css/dashboard.css'];
 $pageJs    = ['/assets/js/dashboard.js', '/assets/js/dashboard-feed.js', '/assets/js/current-action.js'];
 require __DIR__ . '/includes/head.php';

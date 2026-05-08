@@ -9,7 +9,7 @@ require_once __DIR__ . '/src/helpers/security.php';
 
 require_auth_redirect('/');
 
-$pageTitle = 'Медитации — NirvaBody';
+$pageTitle = 'Медитации — ' . APP_NAME;
 $pageCss   = ['/assets/css/meditations.css'];
 $pageJs    = ['/assets/js/meditations.js'];
 require __DIR__ . '/includes/head.php';

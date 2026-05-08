@@ -19,7 +19,7 @@
     <span class="logo-orb__star" style="transform:rotate(292.5deg) translate(40px) rotate(-292.5deg);animation-delay:-2.10s;animation-duration:3.1s"></span>
     <span class="logo-orb__star" style="transform:rotate(337.5deg) translate(40px) rotate(-337.5deg);animation-delay:-2.45s;animation-duration:3.45s"></span>
   </span>
-  <img class="logo-orb__image logo-orb__image--idle" src="/images/img01.png" alt="NirvaBody" />
+  <img class="logo-orb__image logo-orb__image--idle" src="/images/img01.png" alt="<?= APP_NAME ?>" />
   <img class="logo-orb__image logo-orb__image--walking" src="/images/img02.png" alt="" aria-hidden="true" />
   <img class="logo-orb__image logo-orb__image--walking" src="/images/img03.png" alt="" aria-hidden="true" />
 </div>

@@ -5,6 +5,8 @@ session_start();
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../config/mail.php';
 
 $action = $_POST['action'] ?? '';
 
@@ -127,9 +129,9 @@ if ($action === 'forgot') {
     $stmt->bind_param('ssi', $code, $expires, $row['id']);
     $stmt->execute();
     $_SESSION['reset_email'] = $email;
-    $subject = 'Сброс пароля — NirvaBody';
+    $subject = 'Сброс пароля — ' . APP_NAME;
     $body    = "Код для сброса пароля: $code\n\nДействителен 10 минут.\n\nЕсли вы не запрашивали сброс — проигнорируйте это письмо.";
-    $headers = "From: noreply@inter-removals.com\r\nContent-Type: text/plain; charset=UTF-8";
+    $headers = "From: " . MAIL_FROM_NAME . " <" . MAIL_FROM . ">\r\nContent-Type: text/plain; charset=UTF-8";
     mail($email, $subject, $body, $headers);
     echo json_encode(['ok' => true]);
     exit;

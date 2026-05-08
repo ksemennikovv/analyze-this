@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/config/app.php';
-$pageTitle = 'Политика конфиденциальности — NirvaBody';
+$pageTitle = 'Политика конфиденциальности — ' . APP_NAME;
 $pageCss   = [];
 $pageJs    = [];
 require __DIR__ . '/includes/head.php';

@@ -3,6 +3,7 @@ error_reporting(0);
 ini_set('display_errors', 0);
 session_start();
 require_once __DIR__ . '/php/db.php';
+require_once __DIR__ . '/config/app.php';
 
 $user = null;
 if (!empty($_SESSION['user_id'])) {
@@ -13,7 +14,7 @@ if (!empty($_SESSION['user_id'])) {
     $user = $stmt->get_result()->fetch_assoc();
 }
 
-$pageTitle = 'Личный кабинет — NirvaBody';
+$pageTitle = 'Личный кабинет — ' . APP_NAME;
 $pageCss   = ['/assets/css/pages/cabinet.css'];
 $pageJs    = ['/assets/js/pages/cabinet.js'];
 require __DIR__ . '/includes/head.php';

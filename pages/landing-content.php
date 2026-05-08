@@ -139,8 +139,8 @@
     <input class="auth-input" type="email" id="regEmail" placeholder="Ваш email" autocomplete="email" style="margin-bottom:12px" />
     <button id="regSubmit" class="cta-btn">Получить доступ</button>
     <div class="nb-pb-disclaimers">
-      <label class="nb-pb-disc"><input type="checkbox" id="regCheck1" /><span>Я принимаю <a href="https://analyze.inter-removals.com/en/articles/10222767-terms-and-conditions" target="_blank" rel="noopener">условия использования</a></span></label>
-      <label class="nb-pb-disc"><input type="checkbox" id="regCheck2" /><span>Я соглашаюсь на <a href="https://analyze.inter-removals.com/en/articles/10689565-uxcam-data-processing-agreement" target="_blank" rel="noopener">обработку персональных данных</a></span></label>
+      <label class="nb-pb-disc"><input type="checkbox" id="regCheck1" /><span>Я принимаю <a href="<?= APP_DOMAIN ?>/en/articles/10222767-terms-and-conditions" target="_blank" rel="noopener">условия использования</a></span></label>
+      <label class="nb-pb-disc"><input type="checkbox" id="regCheck2" /><span>Я соглашаюсь на <a href="<?= APP_DOMAIN ?>/en/articles/10689565-uxcam-data-processing-agreement" target="_blank" rel="noopener">обработку персональных данных</a></span></label>
     </div>
   </div>
 </div>

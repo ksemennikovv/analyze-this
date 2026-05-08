@@ -4,7 +4,7 @@ ini_set('display_errors', 0);
 session_start();
 require_once __DIR__ . '/config/app.php';
 
-$pageTitle = 'Сброс пароля — NirvaBody';
+$pageTitle = 'Сброс пароля — ' . APP_NAME;
 $pageCss   = [];
 $pageJs    = [];
 require __DIR__ . '/includes/head.php';
