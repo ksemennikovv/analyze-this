@@ -17,11 +17,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `lang`                VARCHAR(10)           DEFAULT 'ru',
   `email_verified`      TINYINT(1)   NOT NULL DEFAULT 0,
   `verify_code`         VARCHAR(10)           DEFAULT NULL,
-  `verify_code_expires` DATETIME              DEFAULT NULL,
-  `reset_code`          VARCHAR(10)           DEFAULT NULL,
-  `reset_code_expires`  DATETIME              DEFAULT NULL,
+  `verify_expires`      DATETIME              DEFAULT NULL,
+  `video_url`           VARCHAR(500)          DEFAULT NULL,
   `created_at`          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
