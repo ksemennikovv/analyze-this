@@ -1,0 +1,42 @@
+﻿.dashboard-page { min-height: 100dvh; background: var(--c-surface); }
+
+.db-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px var(--gap);
+  background: var(--c-bg);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky; top: 0; z-index: 100;
+}
+.db-logo { font-size: 1.125rem; font-weight: 800; }
+.db-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--c-amber);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .9rem;
+}
+
+.page-wrap { padding: 16px var(--gap); }
+.db-greeting { padding: 8px 0 4px; }
+
+.db-chat-start .chat-textarea { min-height: 72px; }
+
+.db-resume {
+  background: var(--c-bg);
+  border-left: 3px solid var(--c-amber) !important;
+}
+.db-resume-title { font-weight: 600; font-size: 1rem; }
+
+.db-analysis-card {
+  background: var(--c-bg);
+  border-radius: var(--r-md);
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: var(--t);
+}
+.db-analysis-card:hover { box-shadow: var(--shadow-sm); }
+.db-analysis-title { font-weight: 600; font-size: .9375rem; }
+
+.db-empty { padding: 40px var(--gap); }

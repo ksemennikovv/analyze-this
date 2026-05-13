@@ -8,44 +8,35 @@ set ARCHIVE=%ARCHIVE: =0%
 if /i "%1"=="full" (
   echo [FULL] Creating %ARCHIVE%...
   %ZIP% a -tzip %ARCHIVE% ^
-    assets ^
-    includes ^
-    pages ^
-    api ^
+    features ^
+    shared ^
     config ^
     src ^
-    prompts ^
+    storage ^
     database ^
     images ^
     videos ^
-    storage ^
     robots.txt ^
     .htaccess ^
     sitemap.xml ^
     *.php ^
     -xr!*.bat ^
     -xr!*.zip ^
-    -xr!*debug.txt ^
-    -xr!storage\logs\*.log
+    -xr!*.log ^
+    -xr!storage\logs\*
 ) else (
   echo [DEFAULT] Creating %ARCHIVE%...
   %ZIP% a -tzip %ARCHIVE% ^
-    assets ^
-    includes ^
-    pages ^
-    api ^
+    features ^
+    shared ^
     config ^
     src ^
-    prompts ^
-    database ^
     robots.txt ^
     .htaccess ^
-    sitemap.xml ^
     *.php ^
     -xr!*.bat ^
     -xr!*.zip ^
-    -xr!*debug.txt ^
-    -xr!storage\logs\*.log
+    -xr!*.log
 )
 
 echo Done: %ARCHIVE%
