@@ -72,7 +72,7 @@ CREATE TABLE `analyses` (
   `id`               INT NOT NULL AUTO_INCREMENT,
   `user_id`          INT NOT NULL,
   `title`            VARCHAR(255) DEFAULT NULL,
-  `status`           ENUM('in_chat','practice_pending','reflection_pending','completed') NOT NULL DEFAULT 'in_chat',
+  `status`           ENUM('draft_started','chat_in_progress','analysis_completed','practice_assigned','practice_completed','reflection_in_progress','completed','abandoned') NOT NULL DEFAULT 'draft_started',
   `practice_num`     INT DEFAULT NULL,
   `personal_task`    TEXT DEFAULT NULL,
   `summary`          TEXT DEFAULT NULL,

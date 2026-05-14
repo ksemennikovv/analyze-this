@@ -97,9 +97,20 @@ include __DIR__ . '/shared/layout/header.php';
             <div class="db-analysis-title"><?= htmlspecialchars($a['title']) ?></div>
             <div class="caption text-muted mt-4"><?= date('j M', strtotime($a['created_at'])) ?></div>
           </div>
-          <span class="badge <?= $a['status']==='completed'?'badge-purple':'badge-amber' ?>">
-            <?= $a['status']==='completed' ? 'Завершён' : 'В процессе' ?>
-          </span>
+          <?php
+            $statusLabels = [
+              'draft_started'        => ['В черновике',    'badge-amber'],
+              'chat_in_progress'     => ['В разборе',      'badge-amber'],
+              'analysis_completed'   => ['Практика ждёт',  'badge-amber'],
+              'practice_assigned'    => ['Практика ждёт',  'badge-amber'],
+              'practice_completed'   => ['Самоисследование','badge-amber'],
+              'reflection_in_progress'=> ['Самоисследование','badge-amber'],
+              'completed'            => ['Завершён',        'badge-purple'],
+              'abandoned'            => ['Прерван',         'badge-amber'],
+            ];
+            [$slabel, $sbadge] = $statusLabels[$a['status']] ?? ['В процессе', 'badge-amber'];
+          ?>
+          <span class="badge <?= $sbadge ?>"><?= $slabel ?></span>
         </div>
       </div>
       <?php endforeach; ?>

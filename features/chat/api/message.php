@@ -37,6 +37,11 @@ $stmt->execute(); $stmt->close();
 
 $history[] = ['role' => 'user', 'content' => $content];
 
+// Move from draft_started to chat_in_progress on first real message
+$stmt = $db->prepare("UPDATE analyses SET status='chat_in_progress' WHERE id=? AND status='draft_started'");
+$stmt->bind_param('i', $analysisId);
+$stmt->execute(); $stmt->close();
+
 // System prompt
 $systemPrompt = file_get_contents(__DIR__ . '/../../../storage/prompts/analysis-prompt.txt') ?: "Ты — психолог-аналитик сервиса Nirva AI. Ведёшь глубокий диалог о психологическом состоянии. Задавай уточняющие вопросы. После достаточного разбора (минимум 5 обменов) сообщи что подобрал практику и предложи ввести email. В конце своего ПОСЛЕДНЕГО сообщения добавь скрытый сигнал: [PRACTICE_SELECTED:N] где N — номер практики 1-20.";
 
@@ -67,7 +72,7 @@ if ($reply && preg_match('/\[NIRVA_START\](.*?)\[NIRVA_END\]/s', $reply, $m)) {
         'UPDATE analyses SET status=?, practice_num=?, personal_task=?, summary=?,
          title=IF(? != "" AND title="Новый разбор", ?, title) WHERE id=?'
     );
-    $s = 'practice_pending';
+    $s = 'analysis_completed';
     $stmt->bind_param('sisssssi', $s, $practiceNum, $personalTask, $summary, $topic, $topic, $analysisId);
     $stmt->execute(); $stmt->close();
 

@@ -14,8 +14,8 @@ $userId = $_SESSION['user_id'] ?? null;
 
 // Create analysis record
 $stmt = $db->prepare('INSERT INTO analyses (user_id, title, status) VALUES (?, ?, ?)');
-$title = $firstMsg ? mb_substr($firstMsg, 0, 60) : 'Новый разбор';
-$status = 'in_chat';
+$title  = $firstMsg ? mb_substr($firstMsg, 0, 60) : 'Новый разбор';
+$status = $firstMsg ? 'chat_in_progress' : 'draft_started';
 $uid = $userId ?: 0;
 $stmt->bind_param('iss', $uid, $title, $status);
 $stmt->execute();

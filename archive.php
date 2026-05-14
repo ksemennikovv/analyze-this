@@ -47,9 +47,22 @@ include __DIR__ . '/shared/layout/header.php';
     </div>
 
     <div class="archive-list mt-16" id="archiveList">
+      <?php
+        $statusLabels = [
+          'draft_started'         => ['В черновике',     'badge-amber'],
+          'chat_in_progress'      => ['Разбор идёт',     'badge-amber'],
+          'analysis_completed'    => ['Практика ждёт',   'badge-amber'],
+          'practice_assigned'     => ['Практика ждёт',   'badge-amber'],
+          'practice_completed'    => ['Самоисследование','badge-amber'],
+          'reflection_in_progress'=> ['Самоисследование','badge-amber'],
+          'completed'             => ['Завершён',         'badge-purple'],
+          'abandoned'             => ['Прерван',          'badge-amber'],
+        ];
+      ?>
       <?php foreach ($analyses as $a):
         $done    = $a['status'] === 'completed';
         $dateStr = date('j M Y', strtotime($a['created_at']));
+        [$slabel, $sbadge] = $statusLabels[$a['status']] ?? ['В процессе', 'badge-amber'];
       ?>
       <div class="archive-card"
            data-id="<?= $a['id'] ?>"
@@ -57,9 +70,7 @@ include __DIR__ . '/shared/layout/header.php';
            onclick="Archive.open(<?= $a['id'] ?>, <?= htmlspecialchars(json_encode($a['title'] ?: 'Разбор')) ?>)">
         <div class="archive-card-head">
           <div class="archive-card-title"><?= htmlspecialchars($a['title'] ?: 'Без названия') ?></div>
-          <span class="badge <?= $done ? 'badge-purple' : 'badge-amber' ?>">
-            <?= $done ? 'Завершён' : 'В процессе' ?>
-          </span>
+          <span class="badge <?= $sbadge ?>"><?= $slabel ?></span>
         </div>
         <div class="archive-card-meta">
           <span class="caption"><?= $dateStr ?></span>
