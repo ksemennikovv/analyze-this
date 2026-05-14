@@ -19,16 +19,7 @@
   }
 
   function openAnalysis(id) {
-    Roller.open({
-      id: "analysis-chat",
-      title: "Разбор",
-      content: '<div id="chat-mount"></div>'
-    });
-    setTimeout(function () {
-      if (typeof Chat !== "undefined") {
-        Chat.init("chat-mount", { resume: true, analysisId: id });
-      }
-    }, 60);
+    window.location.href = '/analysis.php?id=' + id;
   }
 
   function openChat(opts) {
@@ -39,7 +30,11 @@
     });
     setTimeout(function () {
       if (typeof Chat !== "undefined") {
-        Chat.init("chat-mount", opts || {});
+        Chat.init("chat-mount", Object.assign({}, opts || {}, {
+          onComplete: function (d) {
+            window.location.href = '/analysis.php?id=' + d.analysis_id;
+          }
+        }));
       }
     }, 60);
   }

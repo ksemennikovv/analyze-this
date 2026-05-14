@@ -80,7 +80,7 @@ var Chat = (function () {
 
   /* ── Load history (resume) ─────────────────────────────────────── */
   function loadHistory() {
-    fetch('/features/chat/api/history.php?analysis_id=' + _analysisId)
+    fetch((_opts.apiHistory || '/features/chat/api/history.php') + '?analysis_id=' + _analysisId)
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (!d.ok) return;
@@ -108,7 +108,7 @@ var Chat = (function () {
     _appendUser(msg);
     _appendLoading();
 
-    fetch('/features/chat/api/message.php', {
+    fetch(_opts.apiMessage || '/features/chat/api/message.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ analysis_id: _analysisId, content: msg })
@@ -120,7 +120,7 @@ var Chat = (function () {
       _removeLoading();
       if (!d.ok) { _appendSystem('Ошибка'); return; }
       if (d.reply) _appendAI(d.reply);
-      if (d.completed && _opts.onComplete) _opts.onComplete(d);
+      if (d.completed && _opts.onComplete) _opts.onComplete(Object.assign({}, d, { analysis_id: _analysisId }));
     })
     .catch(function () {
       _sending = false;

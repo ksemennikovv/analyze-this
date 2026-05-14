@@ -1,0 +1,79 @@
+﻿.analysis-page { min-height: 100vh; }
+
+.analysis-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  background: var(--c-bg);
+  z-index: 10;
+}
+.analysis-back {
+  color: var(--c-muted);
+  font-size: .875rem;
+  text-decoration: none;
+  flex-shrink: 0;
+  padding: 4px 0;
+}
+.analysis-back:hover { color: var(--c-text); }
+.analysis-title {
+  font-size: 1rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* chat mode: fill remaining viewport */
+.analysis-chat-wrap { height: calc(100dvh - 57px); }
+
+/* sections */
+.analysis-section { padding-bottom: 20px; margin-bottom: 4px; border-bottom: 1px solid var(--c-border); }
+.analysis-section:last-child { border-bottom: none; }
+
+/* collapsible summary */
+.analysis-section-toggle {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; background: none; border: none; padding: 0;
+  cursor: pointer; color: var(--c-text);
+}
+.toggle-icon { width: 20px; height: 20px; transition: transform .2s; color: var(--c-muted); flex-shrink: 0; }
+.analysis-section-toggle.is-open .toggle-icon { transform: rotate(180deg); }
+.analysis-summary-body { display: none; margin-top: 12px; }
+.analysis-summary-body.is-open { display: block; }
+
+/* task */
+.analysis-task { padding: 14px 16px; border-radius: 12px; }
+.analysis-task-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; color: var(--c-purple); }
+
+/* video */
+.analysis-video-wrap { position: relative; border-radius: 12px; overflow: hidden; background: #000; }
+.analysis-video { width: 100%; display: block; max-height: 280px; object-fit: cover; }
+.analysis-video--done .analysis-video { opacity: .55; }
+.analysis-video-done-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--c-purple); color: #fff;
+  font-size: .75rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 20px;
+}
+
+/* reflection */
+.analysis-reflection-intro { padding: 18px; border-radius: 12px; }
+.analysis-reflection-chat {
+  border: 1px solid var(--c-border); border-radius: 12px;
+  overflow: hidden; height: 420px;
+}
+.analysis-reflection-done { padding: 14px; border-radius: 12px; }
+.analysis-reflection-actions { margin-top: 10px; }
+
+/* meditations */
+.analysis-med-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border: 1px solid var(--c-border);
+  border-radius: 12px; margin-bottom: 10px;
+}
+.analysis-med-info { flex: 1; min-width: 0; }
+.analysis-med-title { font-size: .9375rem; font-weight: 500; }
