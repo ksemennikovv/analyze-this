@@ -18,14 +18,15 @@
     });
   }
 
-  /* ── CTA button → open chat roller ───────────────────────────── */
-  var ctaBtn = document.getElementById('landingCta');
-  if (ctaBtn) {
-    ctaBtn.addEventListener('click', function () {
-      var msg = ta ? ta.value.trim() : '';
-      openAnalysisChat(msg);
-    });
+  /* ── CTA / Send buttons → open chat roller ───────────────────── */
+  function onStartClick() {
+    var msg = ta ? ta.value.trim() : '';
+    openAnalysisChat(msg);
   }
+  var ctaBtn = document.getElementById('landingCta');
+  if (ctaBtn) { ctaBtn.addEventListener('click', onStartClick); }
+  var sendBtn = document.getElementById('landingSendBtn');
+  if (sendBtn) { sendBtn.addEventListener('click', onStartClick); }
 
   /* ── Resume buttons ───────────────────────────────────────────── */
   var btnContinue = document.getElementById('btnContinue');

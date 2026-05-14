@@ -116,48 +116,54 @@ $practiceName = $practiceName ?? 'Телесная практика';
     <div class="practice-steps">
       <div class="practice-step">
         <div class="practice-step-num">1</div>
-        <div class="practice-step-title">Заканчивает</div>
-        <?= _practiceMountainSvg() ?>
-        <div style="font-size:.75rem;color:var(--c-text-3)">Выпусти напряжение и злость</div>
+        <div class="practice-step-title">Замахнись</div>
+        <img class="practice-step-img" src="/images/img04.jpg" alt="Замахнись">
+        <div class="practice-step-sub">Выпусти напряжение и злость</div>
       </div>
       <div class="practice-step">
         <div class="practice-step-num">2</div>
         <div class="practice-step-title">Удар по дивану</div>
-        <?= _practiceMountainSvg() ?>
+        <img class="practice-step-img" src="/images/img05.jpg" alt="Удар по дивану">
+        <div class="practice-step-sub">Выпусти напряжение и злость</div>
       </div>
       <div class="practice-step">
         <div class="practice-step-num">3</div>
-        <div class="practice-step-title">Выдохни</div>
-        <?= _practiceMountainSvg() ?>
-        <div style="font-size:.75rem;color:var(--c-text-3)">Дыши глубоко и отпусти напряжение</div>
+        <div class="practice-step-title">Выдохи</div>
+        <img class="practice-step-img" src="/images/img06.jpg" alt="Выдохи">
+        <div class="practice-step-sub">Дыши глубоко и отпусти напряжение</div>
       </div>
       <div class="practice-step">
         <div class="practice-step-num">4</div>
-        <div class="practice-step-title">Почувствуй</div>
-        <?= _practiceMountainSvg() ?>
-        <div style="font-size:.75rem;color:var(--c-text-3)">Напряжение уходит</div>
+        <div class="practice-step-title">Почувствуй легче</div>
+        <img class="practice-step-img" src="/images/img07.jpg" alt="Почувствуй легче">
+        <div class="practice-step-sub">Напряжение ушло</div>
       </div>
     </div>
   </section>
 
   <!-- ── Reviews ──────────────────────────────────────────────────── -->
   <section class="reviews-section page-wrap">
-    <h2>Отзывы</h2>
-    <div class="review-card">
-      <div class="review-stars">★★★★★</div>
-      <div class="review-text clamped" id="rv1">
-        «Добрый день! хочу написать отзыв тем, кто сомневается. Я до практики была в очень подавленном состоянии, почти три тока. Удалось расслабиться. Я это чувствую и вижу по реакции людей вокруг. Было легче после практики, при двух раза работала с Nirva AI уже три раза.»
-      </div>
-      <span class="review-more" onclick="toggleReview('rv1',this)">Читать полностью →</span>
+    <div class="reviews-header">
+      <h2>Отзывы</h2>
+      <span class="reviews-rating-badge">★★★★★ 5-ть звезд</span>
     </div>
-    <div class="review-card">
-      <div class="review-stars">★★★★★</div>
-      <div class="review-text clamped" id="rv2">
-        «Всё получилось с первого раза. Очень понравился персональный подход — практика прямо попала в точку. Чувствую себя значительно лучше, тревога ушла. Рекомендую всем!»
+    <div class="review-carousel">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text clamped" id="rv1">
+          «Добрый день! вчера не писала, отчитаюсь за вчера! Была дивана, от души так что, там так! Я это 3 заходa! побила 3 раза, успокоилась за 3 минуты после 5 почувствовала, что нужно ещё, и потом ещё! просто выбила из этого дивана всё 😊 очень очень легко! после дивана легко после практики, моя улыбка не сходила с лица 😊 »
+        </div>
+        <span class="review-more" onclick="toggleReview('rv1',this)">Читать полностью →</span>
       </div>
-      <span class="review-more" onclick="toggleReview('rv2',this)">Читать полностью →</span>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text clamped" id="rv2">
+          «Всё получилось с первого раза. Очень понравился персональный подход — практика прямо попала в точку. Чувствую себя значительно лучше, тревога ушла. Рекомендую всем!»
+        </div>
+        <span class="review-more" onclick="toggleReview('rv2',this)">Читать полностью →</span>
+      </div>
     </div>
-    <div class="review-count">6477+ уже получили положительные результаты</div>
+    <div class="review-count">8477+ уже получили положительные результаты</div>
   </section>
 
   <!-- ── Video reviews ─────────────────────────────────────────────── -->
@@ -237,6 +243,13 @@ function _landingInputBlock() {
             <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/>
           </svg>
           диктофон
+        </button>
+        <button class="btn-send" id="landingSendBtn">
+          отправить
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" stroke="none"/>
+          </svg>
         </button>
       </div>
     </div>

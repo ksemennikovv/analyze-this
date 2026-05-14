@@ -30,8 +30,8 @@ elseif (!empty($_SESSION['guest_analysis_id'])) {
 }
 
 $pageTitle = 'Главная';
-$pageCss   = ['/features/landing/landing.css'];
-$pageJs    = ['/features/landing/landing.js'];
+$pageCss   = ['/features/landing/landing.css', '/features/chat/chat.css'];
+$pageJs    = ['/features/chat/chat.js', '/features/landing/landing.js'];
 
 include __DIR__ . '/shared/layout/header.php';
 include __DIR__ . '/features/landing/landing.page.php';
