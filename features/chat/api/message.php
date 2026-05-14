@@ -43,25 +43,38 @@ $systemPrompt = file_get_contents(__DIR__ . '/../../../storage/prompts/analysis-
 $claude = new ClaudeService();
 $reply  = $claude->chat($systemPrompt, $history);
 
-$completed = false;
-$practiceNum = null;
+$completed    = false;
+$practiceNum  = null;
+$topic        = null;
+$personalTask = null;
+$summary      = null;
 
-// Check for completion signal
-if ($reply && preg_match('/\[PRACTICE_SELECTED:(\d+)\]/i', $reply, $m)) {
-    $practiceNum = (int)$m[1];
-    $reply = trim(preg_replace('/\[PRACTICE_SELECTED:\d+\]/i', '', $reply));
+// Check for completion signal: [NIRVA_START]{json}[NIRVA_END]
+if ($reply && preg_match('/\[NIRVA_START\](.*?)\[NIRVA_END\]/s', $reply, $m)) {
+    $meta = json_decode($m[1], true);
+    if ($meta) {
+        $practiceNum  = (int)($meta['p']       ?? 1);
+        $topic        = trim($meta['topic']    ?? '');
+        $personalTask = trim($meta['task']     ?? '');
+        $summary      = trim($meta['summary']  ?? '');
+    } else {
+        $practiceNum = 1;
+    }
+    $reply     = trim(preg_replace('/\s*\[NIRVA_START\].*?\[NIRVA_END\]/s', '', $reply));
     $completed = true;
 
-    // Update analysis
-    $stmt = $db->prepare('UPDATE analyses SET status=?, practice_num=? WHERE id=?');
+    $stmt = $db->prepare(
+        'UPDATE analyses SET status=?, practice_num=?, personal_task=?, summary=?,
+         title=IF(? != "" AND title="Новый разбор", ?, title) WHERE id=?'
+    );
     $s = 'practice_pending';
-    $stmt->bind_param('sii', $s, $practiceNum, $analysisId);
+    $stmt->bind_param('sisssssi', $s, $practiceNum, $personalTask, $summary, $topic, $topic, $analysisId);
     $stmt->execute(); $stmt->close();
 
-    // Store in session for registration gate
-    $_SESSION['show_gate']     = true;
-    $_SESSION['practice_num']  = $practiceNum;
-    $_SESSION['practice_name'] = 'Состояние Изобилия и уверенности';
+    $_SESSION['show_gate']        = true;
+    $_SESSION['practice_num']     = $practiceNum;
+    $_SESSION['practice_name']    = $personalTask ?: 'Телесная практика';
+    $_SESSION['pending_analysis'] = $analysisId;
 }
 
 // Save assistant reply
@@ -73,8 +86,10 @@ if ($reply) {
 }
 
 echo json_encode([
-    'ok'          => true,
-    'reply'       => $reply,
-    'completed'   => $completed,
-    'practice_num'=> $practiceNum
+    'ok'           => true,
+    'reply'        => $reply,
+    'completed'    => $completed,
+    'practice_num' => $practiceNum,
+    'topic'        => $topic,
+    'personal_task'=> $personalTask,
 ]);

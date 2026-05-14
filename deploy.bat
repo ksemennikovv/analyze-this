@@ -31,6 +31,7 @@ if /i "%1"=="full" (
     shared ^
     config ^
     src ^
+    storage\prompts ^
     robots.txt ^
     .htaccess ^
     *.php ^

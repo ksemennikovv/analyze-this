@@ -37,7 +37,7 @@ $stmt->close();
 $analysesUsed = (int)($usedRow['cnt'] ?? 0);
 
 $planNames  = ['start' => 'СТАРТ', 'base' => 'БАЗОВЫЙ', 'transformation' => 'ТРАНСФОРМАЦИЯ'];
-$planLimits = ['start' => 1, 'base' => 4, 'transformation' => 0];
+$planLimits = ['start' => 1, 'base' => 2, 'transformation' => 4];
 
 $pageTitle = 'Профиль';
 $navActive = 'billing';
@@ -123,7 +123,7 @@ include __DIR__ . '/shared/layout/header.php';
             <div class="billing-plan-price">9 500 <span>₽/мес</span></div>
           </div>
           <ul class="billing-plan-features">
-            <li>4 разбора в месяц</li>
+            <li>2 разбора в месяц</li>
             <li>Персональные практики</li>
             <li>Дневник без ограничений</li>
             <li>Медитации по теме разбора</li>
@@ -139,8 +139,8 @@ include __DIR__ . '/shared/layout/header.php';
             <div class="billing-plan-price">18 000 <span>₽/мес</span></div>
           </div>
           <ul class="billing-plan-features">
-            <li>Безлимитные разборы</li>
-            <li>Все практики включены</li>
+            <li>4 разбора в месяц</li>
+            <li>Персональные практики</li>
             <li>Дневник без ограничений</li>
             <li>Все медитации включены</li>
             <li>Приоритетная поддержка</li>

@@ -145,7 +145,7 @@
       verifySubmit.disabled = false;
       verifySubmit.textContent = 'Подтвердить';
       if (!d.ok) { showError(errEl, d.error || 'Ошибка'); return; }
-      window.location.href = '/dashboard.php';
+      window.location.href = d.analysis_id ? '/analysis.php?id=' + d.analysis_id : '/dashboard.php';
     })
     .catch(function () {
       verifySubmit.disabled = false;

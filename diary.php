@@ -16,6 +16,18 @@ $stmt->execute();
 $entries = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
+// Check subscription for paywall (3 free entries)
+$stmt = $db->prepare('SELECT id FROM subscriptions WHERE user_id=? AND status="active" LIMIT 1');
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$hasSub = (bool)$stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+$entryCount    = count($entries);
+$freeLimit     = 3;
+$diaryLocked   = !$hasSub && $entryCount >= $freeLimit;
+$nearLimit     = !$hasSub && $entryCount === $freeLimit - 1; // last free entry
+
 $pageTitle = 'Дневник';
 $navActive = 'diary';
 $pageCss   = ['/features/diary/diary.css'];
@@ -27,10 +39,29 @@ include __DIR__ . '/shared/layout/header.php';
 
   <div class="diary-topbar page-wrap">
     <h1 class="h2">Дневник</h1>
+    <?php if (!$diaryLocked): ?>
     <button class="btn btn-primary btn-sm" id="diaryNewBtn">+ Запись</button>
+    <?php else: ?>
+    <a href="/billing.php" class="btn btn-outline btn-sm">Открыть доступ</a>
+    <?php endif; ?>
   </div>
 
   <div class="page-wrap pb-safe">
+
+    <?php if ($diaryLocked): ?>
+    <div class="diary-paywall card mt-16">
+      <div class="diary-paywall-icon">📔</div>
+      <div class="h3 mb-8">Бесплатные записи закончились</div>
+      <p class="text-muted body-sm mb-16">Вы использовали <?= $freeLimit ?> бесплатные записи. Чтобы продолжить вести дневник и улучшать точность разборов — выберите тариф.</p>
+      <a href="/billing.php" class="btn btn-primary btn-full">Выбрать тариф</a>
+    </div>
+    <?php elseif ($nearLimit): ?>
+    <div class="diary-near-limit card-bordered mt-16">
+      <span class="badge badge-amber mb-8">Осталась 1 бесплатная запись</span>
+      <p class="text-muted body-sm">После неё потребуется подписка для продолжения.</p>
+    </div>
+    <?php endif; ?>
+
     <?php if (empty($entries)): ?>
     <div class="diary-empty text-center">
       <div class="diary-empty-icon">📔</div>

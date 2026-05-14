@@ -30,4 +30,22 @@ session_regenerate_id(true);
 $_SESSION['user_id']   = $row['id'];
 $_SESSION['user_name'] = $row['name'] ?? '';
 
-echo json_encode(['ok' => true, 'name' => $row['name'] ?? '']);
+// Link guest analysis to this user
+$analysisId = null;
+$guestAnalysisId = $_SESSION['guest_analysis_id'] ?? null;
+if ($guestAnalysisId) {
+    $uid = $row['id'];
+    // Update analysis and its messages to real user_id
+    $stmt = $db->prepare('UPDATE analyses SET user_id=? WHERE id=? AND user_id=0');
+    $stmt->bind_param('ii', $uid, $guestAnalysisId);
+    $stmt->execute(); $stmt->close();
+
+    $stmt = $db->prepare('UPDATE analysis_messages SET user_id=? WHERE analysis_id=? AND user_id=0');
+    $stmt->bind_param('ii', $uid, $guestAnalysisId);
+    $stmt->execute(); $stmt->close();
+
+    $analysisId = (int)$guestAnalysisId;
+    unset($_SESSION['guest_analysis_id'], $_SESSION['guest_analysis_title']);
+}
+
+echo json_encode(['ok' => true, 'name' => $row['name'] ?? '', 'analysis_id' => $analysisId]);

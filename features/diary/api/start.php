@@ -12,6 +12,21 @@ if (empty($_SESSION['user_id'])) { json_error('Unauthorized', 401); }
 $userId = (int)$_SESSION['user_id'];
 $db = Database::getInstance();
 
+// Paywall: 3 free entries without subscription
+$stmt = $db->prepare('SELECT id FROM subscriptions WHERE user_id=? AND status="active" LIMIT 1');
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$hasSub = (bool)$stmt->get_result()->fetch_assoc();
+$stmt->close();
+if (!$hasSub) {
+    $stmt = $db->prepare('SELECT COUNT(*) as cnt FROM diary_entries WHERE user_id=?');
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $cnt = (int)$stmt->get_result()->fetch_assoc()['cnt'];
+    $stmt->close();
+    if ($cnt >= 3) { json_error('paywall'); }
+}
+
 $title  = 'Запись дневника';
 $status = 'in_chat';
 $stmt = $db->prepare('INSERT INTO diary_entries (user_id, title, status) VALUES (?, ?, ?)');

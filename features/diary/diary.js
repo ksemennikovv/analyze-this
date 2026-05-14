@@ -19,11 +19,13 @@
         .then(function (r) { return r.json(); })
         .then(function (d) {
           _removeTyping();
-          if (d.ok) {
-            currentEntryId = d.entry_id;
-            Roller.setTitle('diary-new', d.title || 'Дневник');
-            _appendMsg('assistant', d.message);
+          if (!d.ok) {
+            if (d.error === 'paywall') { Roller.close(); window.location.href = '/billing.php'; }
+            return;
           }
+          currentEntryId = d.entry_id;
+          Roller.setTitle('diary-new', d.title || 'Дневник');
+          _appendMsg('assistant', d.message);
         });
       }
     });
