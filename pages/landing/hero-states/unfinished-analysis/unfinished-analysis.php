@@ -1,22 +1,7 @@
 <?php
-// pages/landing/includes/hero-states/unfinished-analysis/unfinished-analysis.php
-// State: user has an unfinished analysis session
-$resumeTitle = $resumeTitle ?? 'Ваш запрос';
-?>
-<div id="landingMain">
-  <div class="landing-hero page-wrap">
-    <div class="landing-resume">
-      <h3>Разбор не завершён</h3>
-      <p>Вы начали разбор на тему «<?= htmlspecialchars($resumeTitle) ?>». Можем продолжить с того места, где остановились.</p>
-      <div class="landing-resume-actions">
-        <button class="btn btn-primary btn-sm" id="btnContinue">Продолжить разбор</button>
-        <button class="btn btn-secondary btn-sm" id="btnNewAnalysis">Начать новый</button>
-      </div>
-    </div>
-    <?= _landingInputBlock() ?>
-  </div>
-</div>
-<?php
+// pages/landing/hero-states/unfinished-analysis/unfinished-analysis.php
+$resumeTitle    = $resumeTitle ?? 'Ваш запрос';
+$resumeAnalysisId = (int)($_SESSION['guest_analysis_id'] ?? 0);
 if (!function_exists('_landingInputBlock')) {
   function _landingInputBlock() {
     return '
@@ -44,3 +29,18 @@ if (!function_exists('_landingInputBlock')) {
     </div>';
   }
 }
+?>
+<div id="landingMain">
+  <div class="landing-hero page-wrap">
+    <div class="landing-resume">
+      <h3>Разбор не завершён</h3>
+      <p>Вы начали разбор на тему «<?= htmlspecialchars($resumeTitle) ?>». Можем продолжить с того места, где остановились.</p>
+      <div class="landing-resume-actions">
+        <button class="btn btn-primary btn-sm" id="btnContinue"
+                data-analysis-id="<?= $resumeAnalysisId ?>">Продолжить разбор</button>
+        <button class="btn btn-secondary btn-sm" id="btnNewAnalysis">Начать новый</button>
+      </div>
+    </div>
+    <?= _landingInputBlock() ?>
+  </div>
+</div>

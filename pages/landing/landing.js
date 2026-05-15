@@ -36,12 +36,14 @@
 
   /* ── Resume buttons ───────────────────────────────────────── */
   var btnContinue = document.getElementById('btnContinue');
-  if (btnContinue) btnContinue.addEventListener('click', function () { openAnalysisChat('', true); });
+  if (btnContinue) btnContinue.addEventListener('click', function () {
+    openAnalysisChat('', true, parseInt(this.dataset.analysisId, 10) || 0);
+  });
   var btnNew = document.getElementById('btnNewAnalysis');
   if (btnNew) btnNew.addEventListener('click', function () { openAnalysisChat(''); });
 
   /* ── Open chat roller ─────────────────────────────────────── */
-  function openAnalysisChat(initialMsg, resume) {
+  function openAnalysisChat(initialMsg, resume, analysisId) {
     Roller.open({
       id: 'analysis-chat',
       title: 'Разбор',
@@ -52,6 +54,7 @@
         Chat.init('chat-mount', {
           initialMessage: initialMsg,
           resume: !!resume,
+          analysisId: analysisId || 0,
           onComplete: function (data) {
             injectGateInRoller(
               parseInt(data.practice_num, 10) || 1,
