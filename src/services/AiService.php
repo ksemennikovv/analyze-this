@@ -17,7 +17,7 @@ class AiService {
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => json_encode([
                 'model'      => CLAUDE_MODEL,
-                'max_tokens' => 1024,
+                'max_tokens' => 2048,
                 'system'     => $system,
                 'messages'   => $messages,
             ]),
@@ -47,10 +47,10 @@ class AiService {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => json_encode([
-                'model'    => $model,
-                'messages' => array_merge([['role' => 'system', 'content' => $system]], $messages),
-                'max_tokens' => 1024,
-                'stream'   => false,
+                'model'      => $model,
+                'messages'   => array_merge([['role' => 'system', 'content' => $system]], $messages),
+                'max_tokens' => 2048,
+                'stream'     => false,
             ]),
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',

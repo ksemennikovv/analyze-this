@@ -1,4 +1,4 @@
-﻿/* Chat Module - universal chat engine used by analysis roller */
+/* Chat Module - universal chat engine used by analysis roller */
 var Chat = (function () {
   'use strict';
 
@@ -15,9 +15,15 @@ var Chat = (function () {
       '<div class="chat-roller-body">' +
         '<div class="chat-messages" id="chatMessages"></div>' +
         '<div class="chat-input-bar">' +
-          '<textarea id="chatInput" class="chat-ta" rows="1" placeholder="Напишите сообщение…"></textarea>' +
+          '<button class="chat-voice-btn" id="chatVoiceBtn" title="Голосовой ввод">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+              '<path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>' +
+              '<path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/>' +
+            '</svg>' +
+          '</button>' +
+          '<textarea id="chatInput" class="chat-ta" rows="1" placeholder="Напишите сообщение..."></textarea>' +
           '<button class="chat-send-btn" id="chatSendBtn">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
               '<line x1="22" y1="2" x2="11" y2="13"/>' +
               '<polygon points="22 2 15 22 11 13 2 9 22 2"/>' +
             '</svg>' +
@@ -112,19 +118,23 @@ var Chat = (function () {
     });
   }
 
+  var AI_AVATAR =
+    '<div style="width:32px;height:32px;border-radius:50%;background:#0D0B1E;' +
+         'display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">' +
+        '<circle cx="12" cy="12" r="10"/>' +
+        '<path d="M8 14s1.5 2 4 2 4-2 4-2"/>' +
+        '<line x1="9" y1="9" x2="9.01" y2="9"/>' +
+        '<line x1="15" y1="9" x2="15.01" y2="9"/>' +
+      '</svg>' +
+    '</div>';
+
   function _appendAI(text) {
     var msgs = document.getElementById('chatMessages');
     if (!msgs) return;
     var div = document.createElement('div');
     div.className = 'msg-ai';
-    div.innerHTML =
-      '<div class="msg-ai-avatar">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' +
-          '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/>' +
-          '<line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>' +
-        '</svg>' +
-      '</div>' +
-      '<div class="msg-ai-bubble">' + _nl2br(_esc(text)) + '</div>';
+    div.innerHTML = AI_AVATAR + '<div class="msg-ai-bubble">' + _nl2br(_esc(text)) + '</div>';
     msgs.appendChild(div);
     _scrollBottom();
   }
@@ -156,12 +166,12 @@ var Chat = (function () {
     div.className = 'msg-ai';
     div.id = 'chatLoading';
     div.innerHTML =
-      '<div class="msg-ai-avatar">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' +
-          '<circle cx="12" cy="12" r="10"/>' +
-        '</svg>' +
-      '</div>' +
-      '<div class="msg-ai-bubble loading"><span></span><span></span><span></span></div>';
+      AI_AVATAR +
+      '<div class="msg-ai-bubble loading">' +
+        '<span style="width:7px;height:7px;border-radius:50%;background:#999;display:inline-block;margin:0 2px;animation:chatDot 1.2s ease infinite"></span>' +
+        '<span style="width:7px;height:7px;border-radius:50%;background:#999;display:inline-block;margin:0 2px;animation:chatDot 1.2s ease .2s infinite"></span>' +
+        '<span style="width:7px;height:7px;border-radius:50%;background:#999;display:inline-block;margin:0 2px;animation:chatDot 1.2s ease .4s infinite"></span>' +
+      '</div>';
     msgs.appendChild(div);
     _scrollBottom();
   }

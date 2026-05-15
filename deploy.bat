@@ -12,10 +12,8 @@ if /i "%1"=="full" (
     features ^
     assets ^
     prompts ^
-    shared ^
     config ^
     src ^
-    storage ^
     database ^
     images ^
     videos ^
@@ -34,10 +32,8 @@ if /i "%1"=="full" (
     features ^
     assets ^
     prompts ^
-    shared ^
     config ^
     src ^
-    storage\prompts ^
     robots.txt ^
     .htaccess ^
     *.php ^
@@ -46,5 +42,7 @@ if /i "%1"=="full" (
     -xr!*.log
 )
 
+copy /Y %ARCHIVE% deploy_latest.zip >nul
 echo Done: %ARCHIVE%
+echo Latest: deploy_latest.zip
 pause

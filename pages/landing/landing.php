@@ -21,8 +21,8 @@ if (!empty($_SESSION['show_gate'])) {
 }
 
 $pageTitle = 'Главная';
-$pageCss   = ['/pages/landing/landing.css', '/features/chat/chat.css'];
-$pageJs    = ['/features/chat/chat.js', '/pages/landing/landing.js'];
+$pageCss   = ['/pages/landing/landing.css'];
+$pageJs    = ['/features/chat-roller/chat-roller-chat.js', '/pages/landing/landing.js'];
 
 include __DIR__ . '/../../features/header.php';
 ?>

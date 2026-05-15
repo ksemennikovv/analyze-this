@@ -12,7 +12,7 @@ $content    = trim($input['content'] ?? '');
 
 $userId = (int)(($_SESSION['user_id'] ?? $_SESSION['guest_user_id'] ?? 0));
 
-if (!$analysisId || !$content || !$userId) {
+if (!$analysisId || !$content) {
     echo json_encode(['ok' => false, 'error' => 'Неверные параметры']); exit;
 }
 
@@ -41,22 +41,55 @@ $reply = $ai->chat($systemPrompt, $history);
 $completed    = false;
 $practiceNum  = null;
 $personalTask = null;
+$topic        = null;
+$summary      = null;
+
+$msgCount = count($history); // includes the just-inserted user message
+
+if ($reply && preg_match('/\[NIRVA_START\](.*?)\[NIRVA_END\]/s', $reply, $m)) {
+    $meta = json_decode($m[1], true);
+    if ($meta) {
+        $practiceNum  = (int)($meta['p']       ?? 1);
+        $topic        = trim($meta['topic']    ?? '');
+        $personalTask = trim($meta['task']     ?? '');
+        $summary      = trim($meta['summary']  ?? '');
+    } else {
+        $practiceNum = 1;
+    }
+    $reply     = trim(preg_replace('/\s*\[NIRVA_START\].*?\[NIRVA_END\]/s', '', $reply));
+    $completed = true;
+
+    $stmt = $db->prepare(
+        "UPDATE analyses SET status='analysis_completed', practice_num=?, personal_task=?, summary=?,
+         title=IF(? != '' AND title='Новый разбор', ?, title) WHERE id=?"
+    );
+    $stmt->bind_param('issssi', $practiceNum, $personalTask, $summary, $topic, $topic, $analysisId);
+    $stmt->execute(); $stmt->close();
+
+    $_SESSION['show_gate']        = true;
+    $_SESSION['practice_num']     = $practiceNum;
+    $_SESSION['practice_name']    = $personalTask ?: 'Телесная практика';
+    $_SESSION['pending_analysis'] = $analysisId;
+}
 
 if ($reply) {
     $stmt = $db->prepare('INSERT INTO analysis_messages (analysis_id, user_id, role, content) VALUES (?, ?, ?, ?)');
     $role = 'assistant';
     $stmt->bind_param('iiss', $analysisId, $userId, $role, $reply);
     $stmt->execute(); $stmt->close();
+}
 
-    if (preg_match('/\[PRACTICE_(\d+)\]/', $reply, $m)) {
-        $practiceNum  = (int)$m[1];
-        $personalTask = 'Телесная практика №' . $practiceNum;
-        $completed    = true;
-
-        $stmt = $db->prepare("UPDATE analyses SET status='completed', practice_num=?, personal_task=? WHERE id=?");
-        $stmt->bind_param('isi', $practiceNum, $personalTask, $analysisId);
-        $stmt->execute(); $stmt->close();
-    }
+// Fallback: force completion after 12 messages (like site4's SESSION_TRIGGER)
+if (!$completed && $msgCount >= 12) {
+    $completed   = true;
+    $practiceNum = $practiceNum ?: 1;
+    $personalTask = $personalTask ?: 'Телесная практика';
+    $stmt = $db->prepare("UPDATE analyses SET status='analysis_completed', practice_num=? WHERE id=? AND status != 'analysis_completed'");
+    $stmt->bind_param('ii', $practiceNum, $analysisId);
+    $stmt->execute(); $stmt->close();
+    $_SESSION['show_gate']    = true;
+    $_SESSION['practice_num'] = $practiceNum;
+    $_SESSION['practice_name'] = $personalTask;
 }
 
 echo json_encode([
