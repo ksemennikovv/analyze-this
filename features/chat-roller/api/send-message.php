@@ -18,6 +18,14 @@ if (!$analysisId || !$content) {
 
 $db = Database::getInstance();
 
+// Session may not persist on mobile — recover user_id from the analyses table
+if (!$userId) {
+    $r = $db->query("SELECT user_id FROM analyses WHERE id=$analysisId LIMIT 1");
+    if ($r && ($row = $r->fetch_row())) $userId = (int)$row[0];
+}
+
+$db = Database::getInstance();
+
 $stmt = $db->prepare('INSERT INTO analysis_messages (analysis_id, user_id, role, content) VALUES (?, ?, ?, ?)');
 $role = 'user';
 $stmt->bind_param('iiss', $analysisId, $userId, $role, $content);
@@ -79,8 +87,8 @@ if ($reply) {
     $stmt->execute(); $stmt->close();
 }
 
-// Fallback: force completion after 8 messages
-if (!$completed && $msgCount >= 8) {
+// Fallback: force completion after 6 messages (3 exchanges)
+if (!$completed && $msgCount >= 6) {
     $completed   = true;
     $practiceNum = $practiceNum ?: 1;
     $personalTask = $personalTask ?: 'Телесная практика';
@@ -98,4 +106,10 @@ echo json_encode([
     'completed'    => $completed,
     'practice_num' => $practiceNum,
     'personal_task'=> $personalTask,
+    '_debug_msgCount' => $msgCount,
+    '_debug_analysisId' => $analysisId,
+    '_debug_userId' => $userId,
+    '_debug_replyStored' => ($reply ? 'yes' : 'no'),
+    '_debug_insertError' => $db->error,
+    '_debug_totalInDb' => (int)$db->query("SELECT COUNT(*) FROM analysis_messages WHERE analysis_id=$analysisId")->fetch_row()[0],
 ]);
