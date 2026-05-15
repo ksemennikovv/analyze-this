@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/../../../config/database.php';
 require_once __DIR__ . '/../../../config/ai.php';
 require_once __DIR__ . '/../../../src/db/Database.php';
-require_once __DIR__ . '/../../../src/services/ClaudeService.php';
+require_once __DIR__ . '/../../../src/services/AiService.php';
 
 $input      = json_decode(file_get_contents('php://input'), true);
 $analysisId = (int)($input['analysis_id'] ?? 0);
@@ -38,10 +38,10 @@ $stmt->execute(); $stmt->close();
 
 $history[] = ['role' => 'user', 'content' => $content];
 
-$systemPrompt = file_get_contents(__DIR__ . '/../../../storage/prompts/reflection-prompt.txt') ?: 'Ты — эмпатичный психолог сервиса Nirva AI. Помоги пользователю осмыслить опыт после телесной практики.';
+$systemPrompt = file_get_contents(__DIR__ . '/../../../prompts/reflection-prompt.txt') ?: 'Ты — эмпатичный психолог сервиса Nirva AI. Помоги пользователю осмыслить опыт после телесной практики.';
 
-$claude = new ClaudeService();
-$reply  = $claude->chat($systemPrompt, $history);
+$ai    = new AiService();
+$reply = $ai->chat($systemPrompt, $history);
 
 if ($reply) {
     $stmt = $db->prepare('INSERT INTO analysis_messages (analysis_id, user_id, role, content) VALUES (?,?,"assistant",?)');

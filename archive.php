@@ -32,7 +32,7 @@ $navActive = 'archive';
 $pageCss   = ['/features/archive/archive.css'];
 $pageJs    = ['/features/archive/archive.js'];
 
-include __DIR__ . '/shared/layout/header.php';
+include __DIR__ . '/features/header.php';
 include __DIR__ . '/features/archive/archive.page.php';
 include __DIR__ . '/shared/layout/bottom-nav.php';
-include __DIR__ . '/shared/layout/footer.php';
+include __DIR__ . '/features/footer.php';

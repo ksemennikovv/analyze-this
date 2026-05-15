@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/../../../config/database.php';
 require_once __DIR__ . '/../../../config/ai.php';
 require_once __DIR__ . '/../../../src/db/Database.php';
-require_once __DIR__ . '/../../../src/services/ClaudeService.php';
+require_once __DIR__ . '/../../../src/services/AiService.php';
 
 $input      = json_decode(file_get_contents('php://input'), true);
 $analysisId = (int)($input['analysis_id'] ?? 0);
@@ -28,15 +28,15 @@ $stmt->bind_param('ii', $analysisId, $userId);
 $stmt->execute(); $stmt->close();
 
 // Build context for AI
-$systemPrompt = file_get_contents(__DIR__ . '/../../../storage/prompts/reflection-prompt.txt') ?: 'Ты — эмпатичный психолог сервиса Nirva AI. Помоги пользователю осмыслить опыт после телесной практики. Задавай вопросы о телесных ощущениях, изменениях в состоянии. Веди диалог 5-7 сообщений.';
+$systemPrompt = file_get_contents(__DIR__ . '/../../../prompts/reflection-prompt.txt') ?: 'Ты — эмпатичный психолог сервиса Nirva AI. Помоги пользователю осмыслить опыт после телесной практики. Задавай вопросы о телесных ощущениях, изменениях в состоянии. Веди диалог 5-7 сообщений.';
 
 $context = '';
 if ($analysis['summary'])       $context .= 'Итоги разбора: ' . $analysis['summary'] . "\n";
 if ($analysis['personal_task']) $context .= 'Практика: ' . $analysis['personal_task'] . "\n";
 $systemPrompt .= $context ? "\n\nКонтекст разбора:\n" . $context : '';
 
-$claude = new ClaudeService();
-$reply  = $claude->chat($systemPrompt, []);
+$ai    = new AiService();
+$reply = $ai->chat($systemPrompt, [['role'=>'user','content'=>'Начни рефлексию']]);
 
 if ($reply) {
     $stmt = $db->prepare('INSERT INTO analysis_messages (analysis_id, user_id, role, content) VALUES (?,?,"assistant",?)');

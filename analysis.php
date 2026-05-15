@@ -45,7 +45,7 @@ $navActive  = 'archive';
 $pageCss    = ['/features/chat/chat.css', '/features/analysis/analysis.css'];
 $pageJs     = ['/features/chat/chat.js',  '/features/analysis/analysis.js'];
 
-include __DIR__ . '/shared/layout/header.php';
+include __DIR__ . '/features/header.php';
 include __DIR__ . '/features/analysis/analysis.page.php';
 include __DIR__ . '/shared/layout/bottom-nav.php';
-include __DIR__ . '/shared/layout/footer.php';
+include __DIR__ . '/features/footer.php';

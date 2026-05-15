@@ -40,7 +40,7 @@ $navActive = 'home';
 $pageCss   = ['/features/dashboard/dashboard.css'];
 $pageJs    = ['/features/dashboard/dashboard.js'];
 
-include __DIR__ . '/shared/layout/header.php';
+include __DIR__ . '/features/header.php';
 include __DIR__ . '/features/dashboard/dashboard.page.php';
 include __DIR__ . '/shared/layout/bottom-nav.php';
-include __DIR__ . '/shared/layout/footer.php';
+include __DIR__ . '/features/footer.php';

@@ -1,8 +1,8 @@
 ﻿<?php
 class ClaudeService {
-    private string $apiKey;
-    private string $model;
-    private int    $maxTokens;
+    private $apiKey;
+    private $model;
+    private $maxTokens;
 
     public function __construct() {
         $this->apiKey    = defined('AI_API_KEY')    ? AI_API_KEY    : '';

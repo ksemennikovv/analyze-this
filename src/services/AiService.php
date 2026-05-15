@@ -3,6 +3,71 @@ require_once __DIR__ . '/../../config/ai.php';
 
 class AiService {
 
+    public function chat(string $system, array $messages): ?string {
+        if (ACTIVE_PROVIDER === 'claude') {
+            return $this->chatClaude($system, $messages);
+        }
+        return $this->chatOpenAICompat($system, $messages);
+    }
+
+    private function chatClaude(string $system, array $messages): ?string {
+        $ch = curl_init('https://api.anthropic.com/v1/messages');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode([
+                'model'      => CLAUDE_MODEL,
+                'max_tokens' => 1024,
+                'system'     => $system,
+                'messages'   => $messages,
+            ]),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'x-api-key: ' . CLAUDE_API_KEY,
+                'anthropic-version: 2023-06-01',
+            ],
+            CURLOPT_TIMEOUT => 60,
+        ]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        if (!$response) return null;
+        $data = json_decode($response, true);
+        return $data['content'][0]['text'] ?? null;
+    }
+
+    private function chatOpenAICompat(string $system, array $messages): ?string {
+        $url    = ACTIVE_PROVIDER === 'openai'
+            ? 'https://api.openai.com/v1/chat/completions'
+            : 'https://api.deepseek.com/v1/chat/completions';
+        $apiKey = ACTIVE_PROVIDER === 'openai' ? OPENAI_API_KEY : DEEPSEEK_API_KEY;
+        $model  = ACTIVE_PROVIDER === 'openai' ? OPENAI_MODEL   : DEEPSEEK_MODEL;
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode([
+                'model'    => $model,
+                'messages' => array_merge([['role' => 'system', 'content' => $system]], $messages),
+                'max_tokens' => 1024,
+                'stream'   => false,
+            ]),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $apiKey,
+            ],
+            CURLOPT_CONNECTTIMEOUT => 15,
+            CURLOPT_TIMEOUT        => 120,
+        ]);
+        $body = curl_exec($ch);
+        $err  = curl_errno($ch) ? curl_error($ch) : null;
+        curl_close($ch);
+        if ($err || !$body) return null;
+        $json = json_decode($body, true);
+        if (isset($json['error'])) return null;
+        return $json['choices'][0]['message']['content'] ?? null;
+    }
+
     public function streamAnalysis(array $messages, string $systemPrompt): void {
         if (ob_get_level()) ob_end_clean();
         ini_set('output_buffering', 'off');

@@ -37,6 +37,6 @@ if ($code && $email) {
 $pageTitle = 'Подтверждение email';
 $pageCss   = [];
 $pageJs    = [];
-include __DIR__ . '/shared/layout/header.php';
+include __DIR__ . '/features/header.php';
 include __DIR__ . '/features/landing/verify-email.page.php';
-include __DIR__ . '/shared/layout/footer.php';
+include __DIR__ . '/features/footer.php';

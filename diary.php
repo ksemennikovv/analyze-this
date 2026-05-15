@@ -33,7 +33,7 @@ $navActive = 'diary';
 $pageCss   = ['/features/diary/diary.css'];
 $pageJs    = ['/features/diary/diary.js'];
 
-include __DIR__ . '/shared/layout/header.php';
+include __DIR__ . '/features/header.php';
 include __DIR__ . '/features/diary/diary.page.php';
 include __DIR__ . '/shared/layout/bottom-nav.php';
-include __DIR__ . '/shared/layout/footer.php';
+include __DIR__ . '/features/footer.php';

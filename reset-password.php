@@ -9,6 +9,6 @@ $code  = trim($_GET['code']  ?? '');
 $pageTitle = 'Сброс пароля';
 $pageCss   = [];
 $pageJs    = ['/features/landing/reset-password.js'];
-include __DIR__ . '/shared/layout/header.php';
+include __DIR__ . '/features/header.php';
 include __DIR__ . '/features/landing/reset-password.page.php';
-include __DIR__ . '/shared/layout/footer.php';
+include __DIR__ . '/features/footer.php';

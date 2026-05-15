@@ -44,7 +44,7 @@ $navActive = 'billing';
 $pageCss   = ['/features/billing/billing.css'];
 $pageJs    = ['/features/billing/billing.js'];
 
-include __DIR__ . '/shared/layout/header.php';
+include __DIR__ . '/features/header.php';
 include __DIR__ . '/features/billing/billing.page.php';
 include __DIR__ . '/shared/layout/bottom-nav.php';
-include __DIR__ . '/shared/layout/footer.php';
+include __DIR__ . '/features/footer.php';
