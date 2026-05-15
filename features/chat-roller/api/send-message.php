@@ -79,8 +79,8 @@ if ($reply) {
     $stmt->execute(); $stmt->close();
 }
 
-// Fallback: force completion after 12 messages (like site4's SESSION_TRIGGER)
-if (!$completed && $msgCount >= 12) {
+// Fallback: force completion after 8 messages
+if (!$completed && $msgCount >= 8) {
     $completed   = true;
     $practiceNum = $practiceNum ?: 1;
     $personalTask = $personalTask ?: 'Телесная практика';

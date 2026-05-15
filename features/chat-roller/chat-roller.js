@@ -14,7 +14,11 @@ var Roller = (function () {
     backdrop = document.createElement('div');
     backdrop.className = 'roller-backdrop';
     document.body.appendChild(backdrop);
-    backdrop.addEventListener('click', close);
+    backdrop.addEventListener('click', function () {
+      // Don't close via backdrop if a chat analysis is in progress (prevents mobile ghost-click restarts)
+      if (typeof Chat !== 'undefined' && Chat.getAnalysisId && Chat.getAnalysisId()) return;
+      close();
+    });
   }
 
   function open(opts) {
@@ -132,7 +136,7 @@ var Roller = (function () {
     el.addEventListener('touchend', function (e) {
       var dy = e.changedTouches[0].clientY - (startY || 0);
       el.style.transform = '';
-      if (dy > 80) close();
+      if (dy > 80 && !(typeof Chat !== 'undefined' && Chat.getAnalysisId && Chat.getAnalysisId())) close();
       startY = null;
     }, { passive: true });
   }

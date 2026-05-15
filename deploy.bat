@@ -42,7 +42,7 @@ if /i "%1"=="full" (
     -xr!*.log
 )
 
-copy /Y %ARCHIVE% deploy_latest.zip >nul
+rem copy /Y %ARCHIVE% deploy_latest.zip >nul
 echo Done: %ARCHIVE%
 echo Latest: deploy_latest.zip
 pause

@@ -108,7 +108,10 @@ var Chat = (function () {
       _removeLoading();
       if (!d.ok) { _appendSystem('Ошибка'); return; }
       if (d.reply) _appendAI(d.reply);
-      if (d.completed && _opts.onComplete) _opts.onComplete(Object.assign({}, d, { analysis_id: _analysisId }));
+      if (d.completed && _opts.onComplete) {
+        _analysisId = null;
+        _opts.onComplete(Object.assign({}, d));
+      }
     })
     .catch(function () {
       _sending = false;
@@ -192,5 +195,5 @@ var Chat = (function () {
   }
   function _nl2br(s) { return s.replace(/\n/g, '<br>'); }
 
-  return { init: init };
+  return { init: init, getAnalysisId: function () { return _analysisId; } };
 })();
